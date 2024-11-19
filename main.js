@@ -1,30 +1,38 @@
-const { app, BrowserWindow } = require('electron/main')
-const path = require('node:path')
+const { app, BrowserWindow } = require('electron/main');
+const path = require('node:path');
+const waitOn = require('wait-on');
 
-function createWindow() {
+async function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
-        }
-    })
+            preload: path.join(__dirname, 'preload.js'),
+        },
+    });
 
-    win.loadURL('http://localhost:3000')
+    try {
+        // Wait for the React server to be ready
+        await waitOn({ resources: ['http://localhost:3000'] });
+        win.loadURL('http://localhost:3000');
+    } catch (error) {
+        console.error('Error: Failed to load React server', error);
+        win.loadFile('fallback.html'); // Optionally load a fallback page
+    }
 }
 
 app.whenReady().then(() => {
-    createWindow()
+    createWindow();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow()
+            createWindow();
         }
-    })
-})
+    });
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
     }
-})
+});
