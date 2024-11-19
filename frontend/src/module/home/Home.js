@@ -1,60 +1,41 @@
 import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import DashboardFrame from "../../components/DashboardFrame";
+import MainGrid from "../../components/MainGrid";
+import NavbarBreadcrumbs from "../../";
 
-import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Header from '../../components/Header';
-import MainGrid from '../../components/MainGrid';
-import SideMenu from '../../components/SideMenu';
-import AppTheme from '../../shared-theme/AppTheme';
-import {
-  chartsCustomizations,
-  dataGridCustomizations,
-  datePickersCustomizations,
-  treeViewCustomizations,
-} from '../../theme/customizations';
-import AppNavbar from '../../components/AppNavbar';
+export default function Home() {
+  const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+    margin: theme.spacing(1, 0),
+    [`& .${breadcrumbsClasses.separator}`]: {
+      color: (theme.vars || theme).palette.action.disabled,
+      margin: 1,
+    },
+    [`& .${breadcrumbsClasses.ol}`]: {
+      alignItems: 'center',
+    },
+  }));
 
-const xThemeComponents = {
-  ...chartsCustomizations,
-  ...dataGridCustomizations,
-  ...datePickersCustomizations,
-  ...treeViewCustomizations,
-};
+  const navbar =
+    (
+      <StyledBreadcrumbs
+        aria- label="breadcrumb"
+        separator={< NavigateNextRoundedIcon fontSize="small" />}
+      >
+        <Typography variant="body1">Dashboard</Typography>
+        <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>
+          Home
+        </Typography>
+      </StyledBreadcrumbs >
+    )
 
-export default function Home(props) {
+
   return (
-    <AppTheme {...props} themeComponents={xThemeComponents}>
-      <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex' }}>
-        <SideMenu />
-        <AppNavbar />
-        {/* Main content */}
-        <Box
-          component="main"
-          sx={(theme) => ({
-            flexGrow: 1,
-            backgroundColor: theme.vars
-              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-              : alpha(theme.palette.background.default, 1),
-            overflow: 'auto',
-          })}
-        >
-          <Stack
-            spacing={2}
-            sx={{
-              alignItems: 'center',
-              mx: 3,
-              pb: 5,
-              mt: { xs: 8, md: 0 },
-            }}
-          >
-            <Header />
-            <MainGrid />
-          </Stack>
-        </Box>
-      </Box>
-    </AppTheme>
+    <DashboardFrame breadcrumb={navbar}>
+      <MainGrid />
+    </DashboardFrame>
   );
 }

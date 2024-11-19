@@ -13,6 +13,7 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
+import { Link as RouterLink } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -198,7 +199,11 @@ export default function SignUp(props) {
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
                             >
-                                Sign in
+                                <RouterLink
+                                    to="/"
+                                >
+                                    Sign in
+                                </RouterLink>
                             </Link>
                         </Typography>
                     </Box>

@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import Link from '@mui/material/Link';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
@@ -64,6 +64,8 @@ export default function LogIn(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     if (emailError || passwordError) {
       event.preventDefault();
@@ -74,6 +76,8 @@ export default function LogIn(props) {
       email: data.get('email'),
       password: data.get('password'),
     });
+
+    navigate('/home');
   };
 
   const validateInputs = () => {

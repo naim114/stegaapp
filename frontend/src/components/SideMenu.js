@@ -6,9 +6,7 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
-import CardAlert from './CardAlert';
 import OptionsMenu from './OptionsMenu';
 
 const drawerWidth = 240;
@@ -40,13 +38,15 @@ export default function SideMenu() {
           display: 'flex',
           mt: 'calc(var(--template-frame-height, 0px) + 4px)',
           p: 1.5,
+          justifyContent: 'center'
         }}
       >
-        <SelectContent />
+        <Typography component="h2" variant="h6">
+          stegoapp
+        </Typography>
       </Box>
       <Divider />
       <MenuContent />
-      <CardAlert />
       <Stack
         direction="row"
         sx={{
