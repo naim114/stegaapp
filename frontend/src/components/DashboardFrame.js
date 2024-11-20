@@ -19,6 +19,9 @@ import HomeBreadcrumb from '../module/home/HomeBreadcrumb';
 import Steganalysis from '../module/steganalysis/Steganalysis';
 import Report from '../module/report/Report';
 import AdminPanel from '../module/admin/AdminPanel';
+import SteganalysisBreadcrumb from '../module/steganalysis/SteganalysisBreadcrumb';
+import ReportBreadcrumb from '../module/report/ReportBreadcrumb';
+import AdminPanelBreadcrumb from '../module/admin/AdminPanelBreadcrumb';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -36,17 +39,17 @@ const pages = [
     {
         name: 'steganalysis',
         screen: <Steganalysis />,
-        breadcrumb: <HomeBreadcrumb />,
+        breadcrumb: <SteganalysisBreadcrumb />,
     },
     {
         name: 'reporting',
         screen: <Report />,
-        breadcrumb: <HomeBreadcrumb />,
+        breadcrumb: <ReportBreadcrumb />,
 
     }, {
         name: 'admin',
         screen: <AdminPanel />,
-        breadcrumb: <HomeBreadcrumb />,
+        breadcrumb: <AdminPanelBreadcrumb />,
     },
 ];
 
