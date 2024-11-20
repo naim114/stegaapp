@@ -14,8 +14,11 @@ import {
     treeViewCustomizations,
 } from '../theme/customizations';
 import AppNavbar from '../components/AppNavbar';
-import Homepage from '../module/home/Home'
+import Homepage from '../module/home/Homepage'
 import HomeBreadcrumb from '../module/home/HomeBreadcrumb';
+import Steganalysis from '../module/steganalysis/Steganalysis';
+import Report from '../module/report/Report';
+import AdminPanel from '../module/admin/AdminPanel';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -32,17 +35,17 @@ const pages = [
     },
     {
         name: 'steganalysis',
-        screen: <Homepage />,
+        screen: <Steganalysis />,
         breadcrumb: <HomeBreadcrumb />,
     },
     {
         name: 'reporting',
-        screen: <Homepage />,
+        screen: <Report />,
         breadcrumb: <HomeBreadcrumb />,
 
     }, {
         name: 'admin',
-        screen: <Homepage />,
+        screen: <AdminPanel />,
         breadcrumb: <HomeBreadcrumb />,
     },
 ];
