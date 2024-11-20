@@ -14,6 +14,8 @@ import {
     treeViewCustomizations,
 } from '../theme/customizations';
 import AppNavbar from '../components/AppNavbar';
+import Homepage from '../module/home/Home'
+import HomeBreadcrumb from '../module/home/HomeBreadcrumb';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -22,12 +24,53 @@ const xThemeComponents = {
     ...treeViewCustomizations,
 };
 
-export default function DashboardFrame({ breadcrumb, children, ...props }) {
+const pages = [
+    {
+        name: 'home',
+        screen: <Homepage />,
+        breadcrumb: <HomeBreadcrumb />,
+    },
+    {
+        name: 'steganalysis',
+        screen: <Homepage />,
+        breadcrumb: <HomeBreadcrumb />,
+    },
+    {
+        name: 'reporting',
+        screen: <Homepage />,
+        breadcrumb: <HomeBreadcrumb />,
+
+    }, {
+        name: 'admin',
+        screen: <Homepage />,
+        breadcrumb: <HomeBreadcrumb />,
+    },
+];
+
+
+
+export default function DashboardFrame(props) {
+    const [currentPage, setCurrentPage] = React.useState(pages[0]);
+
+    function _handlePage(pageName) {
+        for (let index = 0; index < pages.length; index++) {
+            const page = pages[index];
+
+            if (page.name === pageName) {
+                setCurrentPage(page);
+            }
+
+        }
+    }
+
     return (
         <AppTheme {...props} themeComponents={xThemeComponents}>
             <CssBaseline enableColorScheme />
             <Box sx={{ display: 'flex' }}>
-                <SideMenu />
+                <SideMenu
+                    pageName={currentPage.name}
+                    onClick={(pageName) => _handlePage(pageName)}
+                />
                 <AppNavbar />
                 {/* Main content */}
                 <Box
@@ -49,9 +92,8 @@ export default function DashboardFrame({ breadcrumb, children, ...props }) {
                             mt: { xs: 8, md: 0 },
                         }}
                     >
-                        <Header breadcrumb={breadcrumb} />
-                        {/* Render children here */}
-                        {children}
+                        <Header breadcrumb={currentPage.breadcrumb} />
+                        {currentPage.screen}
                     </Stack>
                 </Box>
             </Box>

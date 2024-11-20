@@ -22,7 +22,7 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
-export default function SideMenu() {
+export default function SideMenu({ pageName, ...props }) {
   return (
     <Drawer
       variant="permanent"
@@ -46,7 +46,7 @@ export default function SideMenu() {
         </Typography>
       </Box>
       <Divider />
-      <MenuContent />
+      <MenuContent pageName={pageName} onClick={(pageName) => props.onClick(pageName)} />
       <Stack
         direction="row"
         sx={{
@@ -65,10 +65,10 @@ export default function SideMenu() {
         />
         <Box sx={{ mr: 'auto' }}>
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-            Riley Carter
+            Ainisa
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            riley@email.com
+            ainisa@email.com
           </Typography>
         </Box>
         <OptionsMenu />

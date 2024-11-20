@@ -7,12 +7,9 @@ import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-
-import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 
-function SideMenuMobile({ open, toggleDrawer }) {
+function SideMenuMobile({ pageName, open, toggleDrawer, ...props }) {
   return (
     <Drawer
       anchor="right"
@@ -50,7 +47,7 @@ function SideMenuMobile({ open, toggleDrawer }) {
         </Stack>
         <Divider />
         <Stack sx={{ flexGrow: 1 }}>
-          <MenuContent />
+          <MenuContent pageName={pageName} onClick={(pageName) => props.onClick(pageName)} />
           <Divider />
         </Stack>
         <Stack sx={{ p: 2 }}>

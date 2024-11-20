@@ -7,30 +7,28 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
-import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import BiotechIcon from '@mui/icons-material/Biotech';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
-import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon /> },
-  { text: 'Steganalysis', icon: <BiotechIcon /> },
-  { text: 'Reporting', icon: <AnalyticsRoundedIcon /> },
-  { text: 'Users (Admin)', icon: <PeopleRoundedIcon /> },
+  { name: 'home', text: 'Home', icon: <HomeRoundedIcon /> },
+  { name: 'steganalysis', text: 'Steganalysis', icon: <BiotechIcon /> },
+  { name: 'reporting', text: 'Reporting', icon: <AnalyticsRoundedIcon /> },
+  { name: 'admin', text: 'Admin', icon: <AdminPanelSettingsIcon /> },
 ];
 
 const secondaryListItems = [
   { text: 'Settings', icon: <SettingsRoundedIcon /> },
 ];
 
-export default function MenuContent() {
+export default function MenuContent({ pageName, ...props }) {
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
         {mainListItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton selected={index === 0}>
+            <ListItemButton selected={item.name === pageName} onClick={() => props.onClick(item.name)}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>

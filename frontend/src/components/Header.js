@@ -17,7 +17,6 @@ export default function Header({ breadcrumb, ...props }) {
       spacing={2}
     >
       {breadcrumb}
-      {/* <NavbarBreadcrumbs /> */}
       <Stack direction="row" sx={{ gap: 1 }}>
         <ColorModeIconDropdown />
       </Stack>

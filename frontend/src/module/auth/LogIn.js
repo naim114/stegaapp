@@ -77,7 +77,7 @@ export default function LogIn(props) {
       password: data.get('password'),
     });
 
-    navigate('/home');
+    navigate('/dashboard');
   };
 
   const validateInputs = () => {
