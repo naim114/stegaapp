@@ -16,6 +16,7 @@
     "electron": "^33.2.0"
   },
   "dependencies": {
+    "@mui/joy": "^5.0.0-beta.48",
     "wait-on": "^8.0.1"
   }
 }

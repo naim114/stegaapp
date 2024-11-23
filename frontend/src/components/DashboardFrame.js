@@ -22,6 +22,8 @@ import AdminPanel from '../module/admin/AdminPanel';
 import SteganalysisBreadcrumb from '../module/steganalysis/SteganalysisBreadcrumb';
 import ReportBreadcrumb from '../module/report/ReportBreadcrumb';
 import AdminPanelBreadcrumb from '../module/admin/AdminPanelBreadcrumb';
+import ActivityLog from '../module/activity/ActivityLog';
+import ActivityBreadcrumb from '../module/activity/ActivityLogBreadcrumb';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -46,7 +48,20 @@ const pages = [
         screen: <Report />,
         breadcrumb: <ReportBreadcrumb />,
 
-    }, {
+    },
+    {
+        name: 'profile',
+        screen: <Report />,
+        breadcrumb: <ReportBreadcrumb />,
+
+    },
+    {
+        name: 'activity',
+        screen: <ActivityLog />,
+        breadcrumb: <ActivityBreadcrumb />,
+
+    },
+    {
         name: 'admin',
         screen: <AdminPanel />,
         breadcrumb: <AdminPanelBreadcrumb />,

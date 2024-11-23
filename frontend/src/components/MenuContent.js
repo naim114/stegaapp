@@ -8,13 +8,16 @@ import Stack from '@mui/material/Stack';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 import BiotechIcon from '@mui/icons-material/Biotech';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const mainListItems = [
   { name: 'home', text: 'Home', icon: <HomeRoundedIcon /> },
   { name: 'steganalysis', text: 'Steganalysis', icon: <BiotechIcon /> },
   { name: 'reporting', text: 'Reporting', icon: <AnalyticsRoundedIcon /> },
+  { name: 'profile', text: 'Profile', icon: <AccountCircleIcon /> },
+  { name: 'activity', text: 'Activity Log', icon: <AssignmentIcon /> },
   { name: 'admin', text: 'Admin', icon: <AdminPanelSettingsIcon /> },
 ];
 

@@ -837,3 +837,93 @@ export const activityLogRows = [
   },
 ];
 
+export const scanReportColumns = [
+  {
+    field: 'scanUser',
+    headerName: 'Scan User',
+    width: 200,
+    renderCell: (params) => (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <Avatar
+          alt={params.row.name}
+          src={params.row.avatar}
+          sx={{ width: 36, height: 36 }}
+        />
+        <span>{params.row.name}</span>
+      </div>
+    ),
+  },
+  { field: 'result', headerName: 'Result', width: 150 },
+  {
+    field: 'confidence',
+    headerName: 'Confidence (%)',
+    width: 180,
+    renderCell: (params) => `${params.value}%`, // Formats confidence as percentage
+  },
+  {
+    field: 'date',
+    headerName: 'Date',
+    width: 200,
+    renderCell: (params) => {
+      const date = new Date(params.value);
+      return date.toLocaleString(); // Formats date to local time
+    },
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    width: 150,
+    sortable: false,
+    renderCell: (params) => (
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => alert(`Viewing details for ${params.row.name}`)}
+      >
+        View More
+      </Button>
+    ),
+  },
+];
+
+export const scanReportRows = [
+  {
+    id: 1,
+    name: 'Riley Carter',
+    avatar: '/static/images/avatar/7.jpg',
+    result: 'Malware Detected',
+    confidence: 95,
+    date: '2024-11-22T08:45:00Z',
+  },
+  {
+    id: 2,
+    name: 'Jordan Lee',
+    avatar: '/static/images/avatar/6.jpg',
+    result: 'No Threats Found',
+    confidence: 99,
+    date: '2024-11-22T14:30:00Z',
+  },
+  {
+    id: 3,
+    name: 'Taylor Smith',
+    avatar: '/static/images/avatar/5.jpg',
+    result: 'Suspicious Activity',
+    confidence: 85,
+    date: '2024-11-21T09:20:00Z',
+  },
+  {
+    id: 4,
+    name: 'Alex Morgan',
+    avatar: '/static/images/avatar/4.jpg',
+    result: 'Malware Detected',
+    confidence: 92,
+    date: '2024-11-20T13:10:00Z',
+  },
+];
