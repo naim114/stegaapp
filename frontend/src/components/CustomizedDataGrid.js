@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { columns, rows } from '../internals/data/gridData';
 
-export default function CustomizedDataGrid() {
+export default function CustomizedDataGrid({ rows, columns }) {
   return (
     <DataGrid
-      autoHeight
-      checkboxSelection
+      // autoHeight
+      // checkboxSelection
       rows={rows}
       columns={columns}
       getRowClassName={(params) =>
@@ -17,6 +16,7 @@ export default function CustomizedDataGrid() {
       }}
       pageSizeOptions={[10, 20, 50]}
       disableColumnResize
+      rowHeight={60}
       density="compact"
       slotProps={{
         filterPanel: {

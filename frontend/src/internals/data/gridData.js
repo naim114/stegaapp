@@ -2,6 +2,8 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 
+import { Button } from '@mui/material';
+
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
 
 function getDaysInMonth(month, year) {
@@ -630,3 +632,208 @@ export const rows = [
     ],
   },
 ];
+
+export const userColumns = [
+  {
+    field: 'avatar',
+    headerName: 'Avatar',
+    width: 100,
+    renderCell: (params) => (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
+        <Avatar
+          sizes="small"
+          alt={params.row.name}
+          src={params.row.avatar}
+          sx={{ width: 36, height: 36 }}
+        />
+      </div>
+    ),
+  },
+  { field: 'name', headerName: 'Name', flex: 1.5, minWidth: 150 },
+  { field: 'email', headerName: 'Email', flex: 2, minWidth: 200 },
+  {
+    field: 'scansPerUser',
+    headerName: 'Scans per User',
+    headerAlign: 'right',
+    align: 'right',
+    flex: 1,
+    minWidth: 150,
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 2,
+    minWidth: 300,
+    sortable: false,
+    renderCell: (params) => (
+      <>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => console.log(`Viewing log for ${params.row.name}`)}
+          sx={{ marginRight: 1 }}
+        >
+          Activity Log
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          color="primary"
+          onClick={() => console.log(`Viewing profile for ${params.row.name}`)}
+          sx={{ marginRight: 1 }}
+        >
+          Profile
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          color="primary"
+          onClick={() => console.log(`Viewing profile for ${params.row.name}`)}
+          sx={{ marginRight: 1 }}
+        >
+          Scan History
+        </Button>
+      </>
+    ),
+  },
+];
+
+export const userRows = [
+  {
+    id: 1,
+    name: 'Alice Johnson',
+    email: 'alice.johnson@example.com',
+    avatar: '/static/images/avatar/1.jpg',
+    scansPerUser: 12,
+  },
+  {
+    id: 2,
+    name: 'Bob Smith',
+    email: 'bob.smith@example.com',
+    avatar: '/static/images/avatar/2.jpg',
+    scansPerUser: 9,
+  },
+  {
+    id: 3,
+    name: 'Charlie Brown',
+    email: 'charlie.brown@example.com',
+    avatar: '/static/images/avatar/3.jpg',
+    scansPerUser: 15,
+  },
+  {
+    id: 4,
+    name: 'Diana Evans',
+    email: 'diana.evans@example.com',
+    avatar: '/static/images/avatar/4.jpg',
+    scansPerUser: 8,
+  },
+  {
+    id: 5,
+    name: 'Edward Wilson',
+    email: 'edward.wilson@example.com',
+    avatar: '/static/images/avatar/5.jpg',
+    scansPerUser: 20,
+  },
+  {
+    id: 6,
+    name: 'Fiona White',
+    email: 'fiona.white@example.com',
+    avatar: '/static/images/avatar/6.jpg',
+    scansPerUser: 5,
+  },
+  {
+    id: 7,
+    name: 'George Harris',
+    email: 'george.harris@example.com',
+    avatar: '/static/images/avatar/7.jpg',
+    scansPerUser: 18,
+  },
+  {
+    id: 8,
+    name: 'Helen Carter',
+    email: 'helen.carter@example.com',
+    avatar: '/static/images/avatar/8.jpg',
+    scansPerUser: 13,
+  },
+  {
+    id: 9,
+    name: 'Ian Moore',
+    email: 'ian.moore@example.com',
+    avatar: '/static/images/avatar/9.jpg',
+    scansPerUser: 11,
+  },
+  {
+    id: 10,
+    name: 'Jessica Taylor',
+    email: 'jessica.taylor@example.com',
+    avatar: '/static/images/avatar/10.jpg',
+    scansPerUser: 6,
+  },
+];
+
+export const activityLogColumns = [
+  {
+    field: 'user',
+    headerName: 'User',
+    width: 200,
+    renderCell: (params) => (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <Avatar
+          alt={params.row.name}
+          src={params.row.avatar}
+          sx={{ width: 36, height: 36 }}
+        />
+        <span>{params.row.name}</span>
+      </div>
+    ),
+  },
+  { field: 'activity', headerName: 'Activity', width: 300 },
+  {
+    field: 'date',
+    headerName: 'Date',
+    width: 200,
+    renderCell: (params) => {
+      const date = new Date(params.value);
+      return date.toLocaleString(); // Formats date to local time
+    },
+  },
+];
+
+// Example Rows for Activity Log
+export const activityLogRows = [
+  {
+    id: 1,
+    name: 'Riley Carter',
+    avatar: '/static/images/avatar/7.jpg',
+    activity: 'Logged in',
+    date: '2024-11-23T08:45:00Z',
+  },
+  {
+    id: 2,
+    name: 'Taylor Smith',
+    avatar: '/static/images/avatar/5.jpg',
+    activity: 'Viewed Report',
+    date: '2024-11-22T14:30:00Z',
+  },
+  {
+    id: 3,
+    name: 'Jordan Lee',
+    avatar: '/static/images/avatar/6.jpg',
+    activity: 'Updated Profile',
+    date: '2024-11-21T09:20:00Z',
+  },
+];
+

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Grid2 } from '@mui/material';
-
+import { columns, rows } from '../../internals/data/gridData';
 import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 
 export default function Report() {
@@ -14,7 +14,7 @@ export default function Report() {
 
             <Grid2 container spacing={2} columns={6}>
                 <Grid2 size={{ xs: 12, lg: 9 }}>
-                    <CustomizedDataGrid />
+                    <CustomizedDataGrid columns={columns} rows={rows} />
                 </Grid2>
             </Grid2>
         </Box>

@@ -6,6 +6,7 @@ import Copyright from '../../internals/components/Copyright';
 import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 import PageViewsBarChart from '../../components/PageViewsBarChart';
 import SessionsChart from '../../components/SessionsChart';
+import { columns, rows } from '../../internals/data/gridData';
 
 export default function Home() {
   return (
@@ -32,7 +33,7 @@ export default function Home() {
       </Typography>
       <Grid container spacing={2} columns={6}>
         <Grid size={{ xs: 12, lg: 9 }}>
-          <CustomizedDataGrid />
+          <CustomizedDataGrid columns={columns} rows={rows} />
         </Grid>
       </Grid>
       <Copyright sx={{ my: 4 }} />
