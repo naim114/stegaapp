@@ -19,7 +19,7 @@ const mainListItems = [
 ];
 
 const secondaryListItems = [
-  { text: 'Settings', icon: <SettingsRoundedIcon /> },
+  // { text: 'Settings', icon: <SettingsRoundedIcon /> },
 ];
 
 export default function MenuContent({ pageName, ...props }) {

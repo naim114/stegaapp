@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
-import ColorModeIconDropdown from '../shared-theme/AppTheme';
-
+import ColorModeSelect from '../shared-theme/ColorModeSelect';
 export default function Header({ breadcrumb, ...props }) {
   return (
     <Stack
@@ -18,7 +17,7 @@ export default function Header({ breadcrumb, ...props }) {
     >
       {breadcrumb}
       <Stack direction="row" sx={{ gap: 1 }}>
-        <ColorModeIconDropdown />
+        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
       </Stack>
     </Stack>
   );
