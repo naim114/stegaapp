@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LogIn from './module/auth/LogIn';
 import SignUp from './module/auth/SignUp';
 import DashboardFrame from './components/DashboardFrame';
+import app from './firebase';
+
+console.log("Firebase App initialized:", app.name);
 
 function App() {
   return (
