@@ -23,6 +23,9 @@ export const signUp = async (email, password, name) => {
         return user;
     } catch (error) {
         console.error('Error signing up:', error);
+
+        addLog(email, "ERROR: " + error);
+
         throw error;  // Propagate the error for UI handling
     }
 };

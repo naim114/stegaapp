@@ -15,6 +15,7 @@ import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { Link as RouterLink } from "react-router-dom";
 import { signUp } from '../../services/auth';
+import { Snackbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -65,15 +66,17 @@ export default function SignUp(props) {
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [nameError, setNameError] = React.useState(false);
     const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+    const [successModal, setSuccessModal] = React.useState(false);
+
+    // Form state for the input fields
+    const [name, setName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
 
     const validateInputs = () => {
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const name = document.getElementById('name');
-
         let isValid = true;
 
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
             setEmailError(true);
             setEmailErrorMessage('Please enter a valid email address.');
             isValid = false;
@@ -82,7 +85,7 @@ export default function SignUp(props) {
             setEmailErrorMessage('');
         }
 
-        if (!password.value || password.value.length < 6) {
+        if (!password || password.length < 6) {
             setPasswordError(true);
             setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
@@ -91,7 +94,7 @@ export default function SignUp(props) {
             setPasswordErrorMessage('');
         }
 
-        if (!name.value || name.value.length < 1) {
+        if (!name || name.length < 1) {
             setNameError(true);
             setNameErrorMessage('Name is required.');
             isValid = false;
@@ -104,23 +107,21 @@ export default function SignUp(props) {
     };
 
     const handleSubmit = async (event) => {
-        if (nameError || emailError || passwordError) {
-            event.preventDefault();
-            return;
-        }
-        const data = new FormData(event.currentTarget);
-        console.log({
-            name: data.get('name'),
-            lastName: data.get('lastName'),
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-
         event.preventDefault();
 
+        if (nameError || emailError || passwordError) {
+            return;
+        }
+
         try {
-            await signUp(data.get('email'), data.get('password'), data.get('name'));  // Call signUp from auth.js
+            await signUp(email, password, name);  // Call signUp from auth.js
             console.log('User signed up successfully!');
+            setSuccessModal(true);
+
+            // Reset form fields after successful sign-up
+            setName('');
+            setEmail('');
+            setPassword('');
         } catch (err) {
             console.log('Error signing up: ' + err.message);  // Handle errors
         }
@@ -153,6 +154,8 @@ export default function SignUp(props) {
                                 fullWidth
                                 id="name"
                                 placeholder="Jon Snow"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
@@ -168,6 +171,8 @@ export default function SignUp(props) {
                                 name="email"
                                 autoComplete="email"
                                 variant="outlined"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
@@ -184,6 +189,8 @@ export default function SignUp(props) {
                                 id="password"
                                 autoComplete="new-password"
                                 variant="outlined"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
@@ -218,6 +225,13 @@ export default function SignUp(props) {
                         </Typography>
                     </Box>
                 </Card>
+
+                <Snackbar
+                    open={successModal}
+                    autoHideDuration={6000}
+                    onClose={() => setSuccessModal(false)}
+                    message="Sign up success! Please login first to continue."
+                />
             </SignUpContainer>
         </AppTheme>
     );
