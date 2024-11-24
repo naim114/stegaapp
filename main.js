@@ -42,7 +42,7 @@ app.on("window-all-closed", () => {
 console.log("Firebase Admin initialized:", db ? "Success" : "Failure");
 
 // Test Firebase Admin SDK Initialization
-db.collection("Log").add({
+db.collection("log").add({
     date: new Date().toISOString(),
     from: "SYSTEM",
     activity: "Start project. Firebase Admin initialized: " + (db ? "Success" : "Failure"),

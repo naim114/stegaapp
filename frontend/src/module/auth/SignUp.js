@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { Link as RouterLink } from "react-router-dom";
+import { signUp } from '../../services/auth';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -102,7 +103,7 @@ export default function SignUp(props) {
         return isValid;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         if (nameError || emailError || passwordError) {
             event.preventDefault();
             return;
@@ -114,6 +115,15 @@ export default function SignUp(props) {
             email: data.get('email'),
             password: data.get('password'),
         });
+
+        event.preventDefault();
+
+        try {
+            await signUp(data.get('email'), data.get('password'), data.get('name'));  // Call signUp from auth.js
+            console.log('User signed up successfully!');
+        } catch (err) {
+            console.log('Error signing up: ' + err.message);  // Handle errors
+        }
     };
 
     return (
