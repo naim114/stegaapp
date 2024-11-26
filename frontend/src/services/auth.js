@@ -1,5 +1,8 @@
 import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { addLog } from './log';
 
@@ -18,27 +21,35 @@ export const signUp = async (email, password, name) => {
 
         console.log('User signed up and data stored:', user);
 
-        addLog(email, ("New user created named " + name + " (" + email + ")"));
+        addLog(email, `New user created named ${name} (${email})`);
 
         return user;
     } catch (error) {
         console.error('Error signing up:', error);
 
-        addLog(email, "ERROR: " + error);
+        addLog(email, `ERROR: ${error.code} - ${error.message}`);
 
-        throw error;  // Propagate the error for UI handling
+        throw error; // Propagate the error for UI handling
     }
 };
 
 // Sign-in function to authenticate an existing user
 export const signIn = async (email, password) => {
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        console.log('User signed in:', user);
+        const user = await signInWithEmailAndPassword(auth, email, password);
+
+        addLog(email, `${email} logged in`);
+
         return user;
     } catch (error) {
-        console.error('Error signing in:', error);
-        throw error;  // Propagate the error for UI handling
+        console.error('Error signing in:', error.code, error.message);
+        if (error.code === 'auth/user-not-found') {
+            throw new Error('No user found with this email.');
+        }
+
+        addLog(email, `ERROR: ${error.code} - ${error.message}`);
+
+        throw error;
     }
+
 };

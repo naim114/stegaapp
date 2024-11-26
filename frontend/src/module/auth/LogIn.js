@@ -15,6 +15,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
+import { signIn } from '../../services/auth';
+import { Snackbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -63,21 +65,33 @@ export default function LogIn(props) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [resultModal, setResultModal] = React.useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+  const handleSubmit = async (event) => {
+    // if (emailError || passwordError) {
+    event.preventDefault();
+    if (!validateInputs()) return;
+    //   return;
+    // }
+
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
       password: data.get('password'),
     });
 
-    navigate('/dashboard');
+    try {
+      const user = await signIn(data.get('email'), data.get('password'));
+      console.log('User signed in successfully!', user);
+
+      setResultModal(true);
+
+      navigate('/dashboard');
+    } catch (err) {
+      console.log('Error signing in: ' + err.message);
+    }
   };
 
   const validateInputs = () => {
@@ -146,6 +160,7 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={emailError ? 'error' : 'primary'}
+              // onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -163,6 +178,7 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+              // onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
             <FormControlLabel
@@ -192,6 +208,13 @@ export default function LogIn(props) {
             </Link>
           </Typography>
         </Card>
+
+        <Snackbar
+          open={resultModal}
+          autoHideDuration={6000}
+          onClose={() => setResultModal(false)}
+          message="Sign in success. Welcome!"
+        />
       </LogInContainer>
     </AppTheme>
   );

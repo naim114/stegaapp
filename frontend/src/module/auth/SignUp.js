@@ -13,7 +13,7 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signUp } from '../../services/auth';
 import { Snackbar } from '@mui/material';
 
@@ -66,12 +66,14 @@ export default function SignUp(props) {
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [nameError, setNameError] = React.useState(false);
     const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-    const [successModal, setSuccessModal] = React.useState(false);
+    const [resultModal, setResultModal] = React.useState(false);
 
     // Form state for the input fields
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+
+    const navigate = useNavigate();
 
     const validateInputs = () => {
         let isValid = true;
@@ -114,16 +116,18 @@ export default function SignUp(props) {
         }
 
         try {
-            await signUp(email, password, name);  // Call signUp from auth.js
+            await signUp(email, password, name);
             console.log('User signed up successfully!');
-            setSuccessModal(true);
+            setResultModal(true);
 
             // Reset form fields after successful sign-up
             setName('');
             setEmail('');
             setPassword('');
+
+            navigate('/');
         } catch (err) {
-            console.log('Error signing up: ' + err.message);  // Handle errors
+            console.log('Error signing up: ' + err.message);
         }
     };
 
@@ -227,9 +231,9 @@ export default function SignUp(props) {
                 </Card>
 
                 <Snackbar
-                    open={successModal}
+                    open={resultModal}
                     autoHideDuration={6000}
-                    onClose={() => setSuccessModal(false)}
+                    onClose={() => setResultModal(false)}
                     message="Sign up success! Please login first to continue."
                 />
             </SignUpContainer>
