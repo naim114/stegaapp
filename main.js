@@ -9,7 +9,7 @@ admin.initializeApp({
     databaseURL: "https://wsm-malaysian-tourism.firebaseio.com"
 });
 
-export const db = admin.firestore();
+const db = admin.firestore();
 
 async function createWindow() {
     const win = new BrowserWindow({
