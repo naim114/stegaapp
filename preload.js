@@ -9,11 +9,11 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 })
 
-const { contextBridge, ipcRenderer } = require("electron");
+// const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("electron", {
-    firebase: {
-        sendData: (data) => ipcRenderer.send("firebase:add-user", data),
-        onDataReceived: (callback) => ipcRenderer.on("firebase:data-received", callback),
-    },
-});
+// contextBridge.exposeInMainWorld("electron", {
+//     firebase: {
+//         sendData: (data) => ipcRenderer.send("firebase:add-user", data),
+//         onDataReceived: (callback) => ipcRenderer.on("firebase:data-received", callback),
+//     },
+// });
