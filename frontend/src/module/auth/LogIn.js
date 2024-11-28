@@ -16,7 +16,7 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { signIn } from '../../services/auth';
-import { Snackbar } from '@mui/material';
+import { CircularProgress, Snackbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -66,6 +66,7 @@ export default function LogIn(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [resultModal, setResultModal] = React.useState(false);
+  const [loading, setLoading] = React.useState(false); // Loading state for the button
 
   const navigate = useNavigate();
 
@@ -82,6 +83,8 @@ export default function LogIn(props) {
       password: data.get('password'),
     });
 
+    setLoading(true); // Start loading
+
     try {
       const user = await signIn(data.get('email'), data.get('password'));
       console.log('User signed in successfully!', user);
@@ -91,6 +94,8 @@ export default function LogIn(props) {
       navigate('/dashboard');
     } catch (err) {
       console.log('Error signing in: ' + err.message);
+    } finally {
+      setLoading(false); // Stop loading once operation is complete
     }
   };
 
@@ -160,7 +165,7 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={emailError ? 'error' : 'primary'}
-              // onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </FormControl>
             <FormControl>
@@ -178,7 +183,7 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
-              // onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </FormControl>
             <FormControlLabel
@@ -190,8 +195,9 @@ export default function LogIn(props) {
               fullWidth
               variant="contained"
               onClick={validateInputs}
+              disabled={loading}
             >
-              Sign in
+              {loading ? <CircularProgress size={24} /> : 'Log In'}
             </Button>
           </Box>
           <Typography sx={{ textAlign: 'center' }}>
