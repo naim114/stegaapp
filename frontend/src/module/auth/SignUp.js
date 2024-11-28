@@ -15,7 +15,8 @@ import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signUp } from '../../services/auth';
-import { Snackbar } from '@mui/material';
+import { Snackbar, CircularProgress } from '@mui/material';
+import { toast } from 'react-toastify';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -66,7 +67,9 @@ export default function SignUp(props) {
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [nameError, setNameError] = React.useState(false);
     const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-    const [resultModal, setResultModal] = React.useState(false);
+    const [isSnackbarShow, setIsSnackbarShow] = React.useState(false);
+    const [snackbarMsg, setSnackbarMsg] = React.useState('');
+    const [loading, setLoading] = React.useState(false); // Loading state for the button
 
     // Form state for the input fields
     const [name, setName] = React.useState('');
@@ -115,10 +118,14 @@ export default function SignUp(props) {
             return;
         }
 
+        setLoading(true); // Start loading
+
         try {
             await signUp(email, password, name);
             console.log('User signed up successfully!');
-            setResultModal(true);
+            setSnackbarMsg("Sign up success! Please login first to continue.");
+            toast('Sign up success! Please login first to continue.');
+            setIsSnackbarShow(true);
 
             // Reset form fields after successful sign-up
             setName('');
@@ -128,6 +135,17 @@ export default function SignUp(props) {
             navigate('/');
         } catch (err) {
             console.log('Error signing up: ' + err.message);
+
+            if (err.message.includes('email-already-in-use')) {
+                setSnackbarMsg("Email already exist. Please try different email.");
+            } else {
+                setSnackbarMsg(err.message);
+            }
+
+            toast(err.message);
+            setIsSnackbarShow(true);
+        } finally {
+            setLoading(false); // Stop loading once operation is complete
         }
     };
 
@@ -163,6 +181,7 @@ export default function SignUp(props) {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
+                                disabled={loading} // Disable while loading
                             />
                         </FormControl>
                         <FormControl>
@@ -180,6 +199,7 @@ export default function SignUp(props) {
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
+                                disabled={loading} // Disable while loading
                             />
                         </FormControl>
                         <FormControl>
@@ -198,6 +218,7 @@ export default function SignUp(props) {
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
+                                disabled={loading} // Disable while loading
                             />
                         </FormControl>
                         <Button
@@ -205,8 +226,9 @@ export default function SignUp(props) {
                             fullWidth
                             variant="contained"
                             onClick={validateInputs}
+                            disabled={loading} // Disable button while loading
                         >
-                            Sign up
+                            {loading ? <CircularProgress size={24} /> : 'Sign up'} {/* Show spinner */}
                         </Button>
                     </Box>
                     <Divider>
@@ -231,10 +253,10 @@ export default function SignUp(props) {
                 </Card>
 
                 <Snackbar
-                    open={resultModal}
+                    open={isSnackbarShow}
                     autoHideDuration={6000}
-                    onClose={() => setResultModal(false)}
-                    message="Sign up success! Please login first to continue."
+                    onClose={() => setIsSnackbarShow(false)}
+                    message={snackbarMsg}
                 />
             </SignUpContainer>
         </AppTheme>
