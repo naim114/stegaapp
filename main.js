@@ -3,6 +3,7 @@ const path = require("node:path");
 const waitOn = require("wait-on");
 const admin = require("firebase-admin");
 const serviceAccount = require("./firebase-service-account.json");
+const { error } = require("node:console");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -21,20 +22,24 @@ async function createWindow() {
     });
 
     try {
-        // Wait for the React server to be ready
-        await waitOn({ resources: ["http://localhost:3000"] });
-        win.loadURL("http://localhost:3000");
+        await waitOn({ resources: ["http://127.0.0.1:3000"] });
+        win.loadURL("http://127.0.0.1:3000");
+
+        win.webContents.openDevTools({ mode: 'detach' });
     } catch (error) {
         console.error("Error: Failed to load React server", error);
-        win.loadFile("fallback.html"); // Optionally load a fallback page
+        win.loadFile("fallback.html");
     }
+
+
 }
 
 app.whenReady().then(() => {
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        const firebaseApiUrl = 'identitytoolkit.googleapis.com';
-        if (details.url.includes(firebaseApiUrl)) {
-            // Skip modifying headers for Firebase API
+        const firebaseApiPatterns = ['identitytoolkit.googleapis.com', 'firestore.googleapis.com'];
+
+        // Skip modifying headers for Firebase API calls
+        if (firebaseApiPatterns.some((pattern) => details.url.includes(pattern))) {
             callback({ responseHeaders: details.responseHeaders });
             return;
         }
@@ -44,8 +49,8 @@ app.whenReady().then(() => {
             responseHeaders: {
                 ...details.responseHeaders,
                 'Access-Control-Allow-Origin': [allowedOrigin],
-                'Access-Control-Allow-Methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-                'Access-Control-Allow-Headers': ['Content-Type', 'Authorization'],
+                'Access-Control-Allow-Methods': ['GET, POST, PUT, DELETE, OPTIONS'],
+                'Access-Control-Allow-Headers': ['Content-Type, Authorization'],
             },
         });
     });
@@ -65,7 +70,6 @@ app.on("window-all-closed", () => {
     }
 });
 
-
 console.log("Firebase Admin initialized:", db ? "Success" : "Failure");
 
 // Test Firebase Admin SDK Initialization
@@ -76,15 +80,20 @@ db.collection("logs").add({
 }).then(() => {
     console.log("Log added!");
 }).catch((error) => {
-    console.error("Error adding log: ", error);
+    console.error("Error adding log (main): ", error);
 });
 
-// IPC Listener for Adding User
-ipcMain.on("firebase:add-user", async (event, userData) => {
+ipcMain.handle("firebase:add-user", async (_, userData) => {
     try {
-        await db.collection("users").add(userData);
-        event.reply("firebase:data-received", "User added successfully!");
+        await db.collection("users").doc(userData.uid).set({
+            uid: userData.uid,
+            name: userData.name,
+            email: userData.email,
+            role: "USER",
+            createdAt: new Date().toISOString(),
+        });
+        return { success: true, message: "User added successfully" };
     } catch (error) {
-        event.reply("firebase:data-received", `Error: ${error.message}`);
+        return { success: false, message: error.message };
     }
 });
