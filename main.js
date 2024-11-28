@@ -1,56 +1,36 @@
-const { app, BrowserWindow, session } = require('electron');
-const path = require('path');
-const http = require('http');
+const { app, BrowserWindow, ipcMain, session } = require("electron");
+const path = require("node:path");
+const waitOn = require("wait-on");
+const admin = require("firebase-admin");
+const serviceAccount = require("./firebase-service-account.json");
 
-// Function to check if the React dev server is running
-const isDevServerRunning = (url) =>
-    new Promise((resolve) => {
-        const request = http.get(url, () => {
-            resolve(true);
-            request.destroy();
-        });
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://wsm-malaysian-tourism.firebaseio.com"
+});
 
-        request.on('error', () => resolve(false));
-    });
+export const db = admin.firestore();
 
-// Function to wait for the React dev server to be ready
-const waitForReactDevServer = async (url, retries = 10, interval = 1000) => {
-    for (let i = 0; i < retries; i++) {
-        if (await isDevServerRunning(url)) return true;
-        await new Promise((resolve) => setTimeout(resolve, interval));
-    }
-    return false;
-};
-
-// Function to create the main application window
-const createWindow = async () => {
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+async function createWindow() {
+    const win = new BrowserWindow({
+        width: 1000,
+        height: 1000,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: true, // Keeps the context isolated for security
+            preload: path.join(__dirname, "preload.js"),
         },
     });
 
-    const devServerUrl = 'http://127.0.0.1:3000';
-
-    // Check if the React dev server is ready
-    const serverReady = await waitForReactDevServer(devServerUrl);
-
-    // Load React dev server or fallback to a local HTML file
-    if (serverReady) {
-        mainWindow.loadURL(devServerUrl);
-    } else {
-        mainWindow.loadFile(path.join(__dirname, 'fallback.html'));
+    try {
+        // Wait for the React server to be ready
+        await waitOn({ resources: ["http://localhost:3000"] });
+        win.loadURL("http://localhost:3000");
+    } catch (error) {
+        console.error("Error: Failed to load React server", error);
+        win.loadFile("fallback.html"); // Optionally load a fallback page
     }
+}
 
-    // Open developer tools in a detached window
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
-};
-
-// Add CORS Headers using the Electron `session` module
-app.on('ready', () => {
+app.whenReady().then(() => {
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         const firebaseApiUrl = 'identitytoolkit.googleapis.com';
         if (details.url.includes(firebaseApiUrl)) {
@@ -70,20 +50,41 @@ app.on('ready', () => {
         });
     });
 
-    // Create the main window
     createWindow();
+
+    app.on("activate", () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+        }
+    });
 });
 
-// Quit the app when all windows are closed
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
         app.quit();
     }
 });
 
-// Recreate a window when the app is re-activated (macOS specific behavior)
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
+
+console.log("Firebase Admin initialized:", db ? "Success" : "Failure");
+
+// Test Firebase Admin SDK Initialization
+db.collection("logs").add({
+    date: new Date().toISOString(),
+    from: "SYSTEM",
+    activity: "Start project. Firebase Admin initialized: " + (db ? "Success" : "Failure"),
+}).then(() => {
+    console.log("Log added!");
+}).catch((error) => {
+    console.error("Error adding log: ", error);
+});
+
+// IPC Listener for Adding User
+ipcMain.on("firebase:add-user", async (event, userData) => {
+    try {
+        await db.collection("users").add(userData);
+        event.reply("firebase:data-received", "User added successfully!");
+    } catch (error) {
+        event.reply("firebase:data-received", `Error: ${error.message}`);
     }
 });

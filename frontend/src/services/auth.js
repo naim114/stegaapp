@@ -13,10 +13,14 @@ export const signUp = async (email, password, name) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        console.log("uid: " + user.uid);
+
         // Store user details in Firestore
         await setDoc(doc(db, 'users', user.uid), {
             name: name,
             email: email,
+            role: "USER",
+            createdAt: Date.now(),
         });
 
         console.log('User signed up and data stored:', user);
