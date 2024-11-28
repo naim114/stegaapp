@@ -10,16 +10,29 @@ import * as React from 'react';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 // import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../services/auth';
 
 // const MenuItem = styled(MuiMenuItem)({
 //   margin: '2px 0',
 // });
 
 export default function OptionsMenu() {
+  const navigate = useNavigate();
+
   // const [setAnchorEl] = React.useState(null);
   // const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = async (event) => {
     // setAnchorEl(event.currentTarget);
+
+    try {
+      await logout();
+      console.log('User logged out successfully!');
+
+      navigate('/');
+    } catch (err) {
+      console.log('Error logging out: ' + err.message);
+    }
   };
   // const handleClose = () => {
   //   setAnchorEl(null);

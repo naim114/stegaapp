@@ -66,3 +66,27 @@ export const signIn = async (email, password) => {
     }
 
 };
+
+// Logout function to sign out the current user
+export const logout = async () => {
+    try {
+        const user = auth.currentUser;
+
+        if (user) {
+            await auth.signOut();
+            console.log('User signed out successfully.');
+
+            // Optionally, log the action
+            addLog(user.email, `${user.email} logged out.`);
+        } else {
+            console.log('No user is currently signed in.');
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error logging out:', error);
+        addLog('System', `ERROR: ${error.code} - ${error.message}`);
+
+        return false;
+    }
+};
