@@ -780,26 +780,28 @@ export const userRows = [
 
 export const activityLogColumns = [
   {
-    field: 'user',
-    headerName: 'User',
-    width: 200,
+    field: 'avatar',
+    headerName: 'Avatar',
+    width: 100,
     renderCell: (params) => (
       <div
         style={{
           display: 'flex',
+          justifyContent: 'center',
           alignItems: 'center',
-          gap: '10px',
+          height: '100%',
         }}
       >
         <Avatar
+          sizes="small"
           alt={params.row.name}
           src={params.row.avatar}
           sx={{ width: 36, height: 36 }}
         />
-        <span>{params.row.name}</span>
       </div>
     ),
   },
+  { field: 'name', headerName: 'Name', flex: 1.5, minWidth: 150 },
   { field: 'activity', headerName: 'Activity', width: 300 },
   {
     field: 'date',

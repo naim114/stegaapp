@@ -1,7 +1,7 @@
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { addLog } from './log';
+import { addLog } from '../model/log';
 import { User } from '../model/user';
 
 auth.onAuthStateChanged((user) => {
@@ -65,26 +65,6 @@ export const signIn = async (email, password) => {
     } catch (error) {
         console.error('Error signing in:', error);
         addLog(email, `ERROR: ${error.code} - ${error.message}`);
-        throw error;
-    }
-};
-
-
-// Function to get a user by ID from Firestore
-export const getUser = async (userId) => {
-    try {
-        const userDoc = await getDoc(doc(db, 'users', userId));
-        if (userDoc.exists()) {
-            const user = User.fromFirestore(userDoc);
-            console.log(user.displayInfo());
-            return user;
-        } else {
-            console.log('User not found');
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        addLog('System', `ERROR: Unable to fetch user ${userId} - ${error.message}`);
         throw error;
     }
 };
