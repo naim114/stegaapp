@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -17,6 +18,7 @@ export const addLog = async (from, activity) => {
         });
 
         console.log("Log added!");
+        toast(activity);
     } catch (error) {
         console.error("Error adding log: ", error);
     }

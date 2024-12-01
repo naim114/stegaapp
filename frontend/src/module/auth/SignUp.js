@@ -69,7 +69,7 @@ export default function SignUp(props) {
     const [nameErrorMessage, setNameErrorMessage] = React.useState('');
     const [isSnackbarShow, setIsSnackbarShow] = React.useState(false);
     const [snackbarMsg, setSnackbarMsg] = React.useState('');
-    const [loading, setLoading] = React.useState(false); // Loading state for the button
+    const [loading, setLoading] = React.useState(false);
 
     // Form state for the input fields
     const [name, setName] = React.useState('');

@@ -65,7 +65,8 @@ export default function LogIn(props) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [resultModal, setResultModal] = React.useState(false);
+  const [isSnackbarShow, setIsSnackbarShow] = React.useState(false);
+  const [snackbarMsg, setSnackbarMsg] = React.useState('');
   const [loading, setLoading] = React.useState(false); // Loading state for the button
 
   const navigate = useNavigate();
@@ -89,10 +90,19 @@ export default function LogIn(props) {
       const user = await signIn(data.get('email'), data.get('password'));
       console.log('User signed in successfully!', user);
 
-      setResultModal(true);
+      setSnackbarMsg('Signed in successfully. Welcome!');
+      setIsSnackbarShow(true);
 
       navigate('/dashboard');
     } catch (err) {
+      if (err.message.includes('auth/invalid-credential')) {
+        setSnackbarMsg("Invalid credential. Please try again.");
+      } else {
+        setSnackbarMsg(err.message);
+      }
+
+      setIsSnackbarShow(true);
+
       console.log('Error signing in: ' + err.message);
     } finally {
       setLoading(false); // Stop loading once operation is complete
@@ -216,10 +226,10 @@ export default function LogIn(props) {
         </Card>
 
         <Snackbar
-          open={resultModal}
+          open={isSnackbarShow}
           autoHideDuration={6000}
-          onClose={() => setResultModal(false)}
-          message="Sign in success. Welcome!"
+          onClose={() => setIsSnackbarShow(false)}
+          message={snackbarMsg}
         />
       </LogInContainer>
     </AppTheme>
