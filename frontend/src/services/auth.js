@@ -110,3 +110,32 @@ export const logout = async () => {
         throw error;
     }
 };
+
+
+export const getCurrentUser = async () => {
+    try {
+        // Check if a user is authenticated
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            throw new Error('No user is currently signed in.');
+        }
+
+        // Fetch user details from Firestore
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+
+        if (!userDoc.exists()) {
+            throw new Error('User data not found in Firestore.');
+        }
+
+        // Convert Firestore data to a User instance
+        const userData = User.fromFirestore(userDoc);
+
+        console.log('Current user fetched:', userData.displayInfo());
+
+        return userData;
+    } catch (error) {
+        console.error('Error getting current user:', error.message);
+        throw error;
+    }
+};
