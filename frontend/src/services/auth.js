@@ -1,10 +1,8 @@
 import { auth, db } from '../firebase';
-import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { addLog } from './log';
+import { User } from '../model/user';
 
 auth.onAuthStateChanged((user) => {
     if (user) {
@@ -14,57 +12,81 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Sign-up function to create a new user
+// Function to sign up a new user
 export const signUp = async (email, password, name) => {
     try {
-        // Create a new user with email and password
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         console.log("uid: " + user.uid);
 
-        // Store user details in Firestore
-        await setDoc(doc(db, 'users', user.uid), {
-            name: name,
-            email: email,
-            role: "USER",
+        const userData = new User({
             uid: user.uid,
+            name,
+            email,
+            role: 'USER',
             createdAt: Date.now(),
         });
 
+        // Store user details in Firestore
+        await setDoc(doc(db, 'users', user.uid), userData.toObject());
+
         console.log('User signed up and data stored:', user);
 
-        addLog(email, `New user created named ${name} (${email})`);
+        addLog(email, `New user created: ${name} (${email})`);
 
-        return user;
+        return userData;
     } catch (error) {
         console.error('Error signing up:', error);
-
         addLog(email, `ERROR: ${error.code} - ${error.message}`);
-
-        throw error; // Propagate the error for UI handling
+        throw error;
     }
 };
 
-// Sign-in function to authenticate an existing user
 export const signIn = async (email, password) => {
     try {
-        const user = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Fetch user data from Firestore
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (!userDoc.exists()) {
+            throw new Error('User data not found in Firestore.');
+        }
+
+        // Convert Firestore data into a User instance
+        const userData = User.fromFirestore(userDoc);
+
+        console.log('User signed in:', userData.displayInfo());
 
         addLog(email, `${email} logged in`);
 
-        return user;
+        return userData;
     } catch (error) {
-        console.error('Error signing in:', error.code, error.message);
-        if (error.code === 'auth/user-not-found') {
-            throw new Error('No user found with this email.');
-        }
-
+        console.error('Error signing in:', error);
         addLog(email, `ERROR: ${error.code} - ${error.message}`);
-
         throw error;
     }
+};
 
+
+// Function to get a user by ID from Firestore
+export const getUser = async (userId) => {
+    try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (userDoc.exists()) {
+            const user = User.fromFirestore(userDoc);
+            console.log(user.displayInfo());
+            return user;
+        } else {
+            console.log('User not found');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        addLog('System', `ERROR: Unable to fetch user ${userId} - ${error.message}`);
+        throw error;
+    }
 };
 
 // Logout function to sign out the current user
@@ -76,7 +98,6 @@ export const logout = async () => {
             await auth.signOut();
             console.log('User signed out successfully.');
 
-            // Optionally, log the action
             addLog(user.email, `${user.email} logged out.`);
         } else {
             console.log('No user is currently signed in.');
@@ -86,7 +107,6 @@ export const logout = async () => {
     } catch (error) {
         console.error('Error logging out:', error);
         addLog('System', `ERROR: ${error.code} - ${error.message}`);
-
-        return false;
+        throw error;
     }
 };
