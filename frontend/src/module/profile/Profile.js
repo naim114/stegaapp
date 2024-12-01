@@ -1,12 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Avatar, Stack, TextField, Button } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
+import { getCurrentUser } from '../../services/auth'; // Adjust path as needed
 
 const ProfilePage = () => {
     // State for name, email, and avatar image URL
-    const [name, setName] = useState('John Doe');
-    const [email, setEmail] = useState('john.doe@example.com');
-    const [avatar, setAvatar] = useState('/static/images/avatar/1.jpg');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [avatar, setAvatar] = useState('');
+
+    // Fetch current user data on component mount
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const user = await getCurrentUser();
+                setName(user?.name || '');
+                setEmail(user?.email || '');
+                setAvatar(user?.photoURL || '/static/images/avatar/default.jpg');
+            } catch (error) {
+                console.error('Error fetching user:', error.message);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const handleNameChange = (event) => {
         setName(event.target.value);
