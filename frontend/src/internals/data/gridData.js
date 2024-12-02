@@ -814,6 +814,20 @@ export const activityLogColumns = [
   },
 ];
 
+
+export const activityLogSimplifyColumns = [
+  { field: 'activity', headerName: 'Activity', width: 300 },
+  {
+    field: 'date',
+    headerName: 'Date',
+    width: 200,
+    renderCell: (params) => {
+      const date = new Date(params.value);
+      return date.toLocaleString(); // Formats date to local time
+    },
+  },
+];
+
 // Example Rows for Activity Log
 export const activityLogRows = [
   {

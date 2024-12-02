@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 const tbName = "logs";
 
@@ -78,5 +78,57 @@ export const getAllLogs = async () => {
     } catch (error) {
         console.error('Error fetching logs:', error);
         throw error; // Propagate the error
+    }
+};
+
+
+// Function to get logs by user
+export const getLogsByUser = async (userId) => {
+    try {
+        // Get a reference to the "logs" collection
+        const logCollection = collection(db, tbName);
+
+        // Create a query to filter logs by userId
+        const userQuery = query(logCollection, where("userId", "==", userId));
+
+        // Get the documents matching the query
+        const logSnapshot = await getDocs(userQuery);
+
+        // Map through the documents and convert them into Log instances
+        const logs = logSnapshot.docs.map(doc => Log.fromFirestore(doc));
+
+        console.log(`Logs for user ${userId}:`, logs);
+
+        return logs; // Return the array of Log instances
+    } catch (error) {
+        console.error(`Error fetching logs for user ${userId}:`, error);
+        throw error; // Propagate the error
+    }
+};
+
+export const getLogsByUserEmail = async (userEmail) => {
+    try {
+        console.log('Fetching logs for email:', userEmail);
+
+        // Reference to the "logs" collection
+        const logCollection = collection(db, tbName);
+
+        // Query logs where "from" matches the email
+        const userQuery = query(logCollection, where("from", "==", userEmail));
+
+        // Fetch documents
+        const logSnapshot = await getDocs(userQuery);
+        console.log('Query snapshot size:', logSnapshot.size);
+
+        // Map through documents and filter valid logs
+        const logs = logSnapshot.docs
+            .map(doc => Log.fromFirestore(doc))
+            .filter(log => log !== null);
+
+        console.log(`Logs for ${userEmail}:`, logs);
+        return logs;
+    } catch (error) {
+        console.error(`Error fetching logs for ${userEmail}:`, error);
+        throw error;
     }
 };
