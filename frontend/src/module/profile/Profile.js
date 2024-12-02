@@ -50,7 +50,7 @@ const ProfilePage = () => {
 
     if (loading) {
         return (
-            <Box sx={{ width: '100%', padding: 2 }}>
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
                 <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
                     Profile
                 </Typography>
@@ -70,7 +70,7 @@ const ProfilePage = () => {
     }
 
     return (
-        <Box sx={{ width: '100%', padding: 2 }}>
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
             <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
                 Profile
             </Typography>
