@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Avatar, Stack, TextField, Button } from '@mui/material';
+import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
 import { getCurrentUser } from '../../services/auth'; // Adjust path as needed
 
 const ProfilePage = () => {
-    // State for name, email, and avatar image URL
+    // State for name, email, avatar, and loading
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
+    const [loading, setLoading] = useState(true);
 
     // Fetch current user data on component mount
     useEffect(() => {
         const fetchUser = async () => {
             try {
+                setLoading(true); // Start loading
                 const user = await getCurrentUser();
                 setName(user?.name || '');
                 setEmail(user?.email || '');
                 setAvatar(user?.photoURL || '/static/images/avatar/default.jpg');
             } catch (error) {
                 console.error('Error fetching user:', error.message);
+            } finally {
+                setLoading(false); // End loading
             }
         };
 
@@ -43,6 +47,25 @@ const ProfilePage = () => {
             reader.readAsDataURL(file);
         }
     };
+
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100vh',
+                    flexDirection: 'column',
+                }}
+            >
+                <CircularProgress />
+                <Typography sx={{ mt: 2 }} variant="body1">
+                    Loading profile...
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ width: '100%', padding: 2 }}>
