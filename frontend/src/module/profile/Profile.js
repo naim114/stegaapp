@@ -50,25 +50,30 @@ const ProfilePage = () => {
 
     if (loading) {
         return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100vh',
-                    flexDirection: 'column',
-                }}
-            >
-                <CircularProgress />
-                <Typography sx={{ mt: 2 }} variant="body1">
-                    Loading profile...
+            <Box sx={{ width: '100%', padding: 2 }}>
+                <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
+                    Profile
                 </Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100vh',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
             </Box>
         );
     }
 
     return (
         <Box sx={{ width: '100%', padding: 2 }}>
+            <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
+                Profile
+            </Typography>
             {/* Profile Section */}
             <Stack direction="row" spacing={4} sx={{ marginBottom: 4 }}>
                 <Avatar
