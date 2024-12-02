@@ -4,6 +4,7 @@ import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
@@ -14,7 +15,7 @@ import {
     treeViewCustomizations,
 } from '../theme/customizations';
 import AppNavbar from '../components/AppNavbar';
-import Homepage from '../module/home/Homepage'
+import Homepage from '../module/home/Homepage';
 import HomeBreadcrumb from '../module/home/HomeBreadcrumb';
 import Steganalysis from '../module/steganalysis/Steganalysis';
 import Report from '../module/report/Report';
@@ -26,6 +27,7 @@ import ActivityLog from '../module/activity/ActivityLog';
 import ActivityBreadcrumb from '../module/activity/ActivityLogBreadcrumb';
 import Profile from '../module/profile/Profile';
 import ProfileBreadcrumb from '../module/profile/ProfileBreadcrumb';
+import { getCurrentUser } from '../services/auth'; // Import authentication service
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -49,19 +51,16 @@ const pages = [
         name: 'reporting',
         screen: <Report />,
         breadcrumb: <ReportBreadcrumb />,
-
     },
     {
         name: 'profile',
         screen: <Profile />,
         breadcrumb: <ProfileBreadcrumb />,
-
     },
     {
         name: 'activity',
         screen: <ActivityLog />,
         breadcrumb: <ActivityBreadcrumb />,
-
     },
     {
         name: 'admin',
@@ -70,10 +69,26 @@ const pages = [
     },
 ];
 
-
-
 export default function DashboardFrame(props) {
     const [currentPage, setCurrentPage] = React.useState(pages[0]);
+    const navigate = useNavigate();
+
+    React.useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const currentUser = await getCurrentUser();
+                if (!currentUser) {
+                    // Redirect to '/' if no user is signed in
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Error checking user:', error);
+                navigate('/'); // Redirect on error
+            }
+        };
+
+        checkUser();
+    }, [navigate]);
 
     function _handlePage(pageName) {
         for (let index = 0; index < pages.length; index++) {
@@ -82,7 +97,6 @@ export default function DashboardFrame(props) {
             if (page.name === pageName) {
                 setCurrentPage(page);
             }
-
         }
     }
 

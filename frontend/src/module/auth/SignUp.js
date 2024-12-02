@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { signUp } from '../../services/auth';
+import { signUp, getCurrentUser } from '../../services/auth';
 import { Snackbar, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
@@ -78,6 +78,23 @@ export default function SignUp(props) {
 
     const navigate = useNavigate();
 
+    // Check for an authenticated user
+    React.useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const currentUser = await getCurrentUser();
+                if (currentUser) {
+                    console.log('Authenticated user found:', currentUser.displayInfo());
+                    navigate('/dashboard');
+                }
+            } catch (error) {
+                console.log('No authenticated user:', error.message);
+            }
+        };
+
+        checkUser();
+    }, [navigate]);
+
     const validateInputs = () => {
         let isValid = true;
 
@@ -114,7 +131,7 @@ export default function SignUp(props) {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (nameError || emailError || passwordError) {
+        if (!validateInputs()) {
             return;
         }
 
@@ -137,7 +154,7 @@ export default function SignUp(props) {
             console.log('Error signing up: ' + err.message);
 
             if (err.message.includes('email-already-in-use')) {
-                setSnackbarMsg("Email already exist. Please try different email.");
+                setSnackbarMsg("Email already exists. Please try a different email.");
             } else {
                 setSnackbarMsg(err.message);
             }
@@ -225,7 +242,6 @@ export default function SignUp(props) {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            onClick={validateInputs}
                             disabled={loading} // Disable button while loading
                         >
                             {loading ? <CircularProgress size={24} /> : 'Sign up'} {/* Show spinner */}
@@ -242,9 +258,7 @@ export default function SignUp(props) {
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
                             >
-                                <RouterLink
-                                    to="/"
-                                >
+                                <RouterLink to="/">
                                     Sign in
                                 </RouterLink>
                             </Link>

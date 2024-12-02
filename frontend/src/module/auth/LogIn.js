@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -11,11 +11,11 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import Link from '@mui/material/Link';
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
-import { signIn } from '../../services/auth';
+import { signIn, getCurrentUser } from '../../services/auth';
 import { CircularProgress, Snackbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -61,30 +61,41 @@ const LogInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function LogIn(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [isSnackbarShow, setIsSnackbarShow] = React.useState(false);
-  const [snackbarMsg, setSnackbarMsg] = React.useState('');
-  const [loading, setLoading] = React.useState(false); // Loading state for the button
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [isSnackbarShow, setIsSnackbarShow] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  // Check for current user on initial render
+  useEffect(() => {
+    const checkCurrentUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          console.log("current user: " + user);
+
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        console.log('No user currently signed in:', error.message);
+      }
+    };
+
+    checkCurrentUser();
+  }, [navigate]);
+
   const handleSubmit = async (event) => {
-    // if (emailError || passwordError) {
     event.preventDefault();
     if (!validateInputs()) return;
-    //   return;
-    // }
 
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
 
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
       const user = await signIn(data.get('email'), data.get('password'));
@@ -96,16 +107,15 @@ export default function LogIn(props) {
       navigate('/dashboard');
     } catch (err) {
       if (err.message.includes('auth/invalid-credential')) {
-        setSnackbarMsg("Invalid credential. Please try again.");
+        setSnackbarMsg('Invalid credential. Please try again.');
       } else {
         setSnackbarMsg(err.message);
       }
 
       setIsSnackbarShow(true);
-
       console.log('Error signing in: ' + err.message);
     } finally {
-      setLoading(false); // Stop loading once operation is complete
+      setLoading(false);
     }
   };
 
@@ -188,7 +198,6 @@ export default function LogIn(props) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                autoFocus
                 required
                 fullWidth
                 variant="outlined"
@@ -204,7 +213,6 @@ export default function LogIn(props) {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : 'Log In'}
@@ -212,15 +220,8 @@ export default function LogIn(props) {
           </Box>
           <Typography sx={{ textAlign: 'center' }}>
             Don&apos;t have an account?{' '}
-            <Link
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
-              <RouterLink
-                to="/sign-up"
-              >
-                Sign up
-              </RouterLink>
+            <Link variant="body2" sx={{ alignSelf: 'center' }}>
+              <RouterLink to="/sign-up">Sign up</RouterLink>
             </Link>
           </Typography>
         </Card>
