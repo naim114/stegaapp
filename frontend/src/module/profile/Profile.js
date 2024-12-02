@@ -77,7 +77,7 @@ const ProfilePage = () => {
             {/* Profile Section */}
             <Stack direction="row" spacing={4} sx={{ marginBottom: 4 }}>
                 <Avatar
-                    alt="User Avatar"
+                    alt={name}
                     src={avatar}
                     sx={{ width: 100, height: 100 }}
                 />

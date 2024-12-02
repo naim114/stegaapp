@@ -28,7 +28,7 @@ const Toolbar = styled(MuiToolbar)({
   },
 });
 
-export default function AppNavbar() {
+export default function AppNavbar({ onClick, pageName, ...props }) {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen) => () => {
@@ -63,16 +63,21 @@ export default function AppNavbar() {
             spacing={1}
             sx={{ justifyContent: 'center', mr: 'auto' }}
           >
-            <CustomIcon />
+            {/* <CustomIcon /> */}
             <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              Dashboard
+              stegaapp
             </Typography>
           </Stack>
           <ColorModeIconDropdown data-screenshot="" />
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>
-          <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
+          <SideMenuMobile
+            open={open}
+            toggleDrawer={toggleDrawer}
+            pageName={pageName}
+            onClick={onClick}
+          />
         </Stack>
       </Toolbar>
     </AppBar>

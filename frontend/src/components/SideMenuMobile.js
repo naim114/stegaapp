@@ -8,8 +8,24 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MenuContent from './MenuContent';
+import { getCurrentUser } from '../services/auth';
 
 function SideMenuMobile({ pageName, open, toggleDrawer, ...props }) {
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser); // Update the state with the fetched user
+      } catch (error) {
+        console.error('Failed to fetch current user:', error.message);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <Drawer
       anchor="right"
@@ -36,12 +52,12 @@ function SideMenuMobile({ pageName, open, toggleDrawer, ...props }) {
           >
             <Avatar
               sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
+              alt={user?.name || 'User'}
+              src={user?.photoURL || '/static/images/avatar/7.jpg'}
               sx={{ width: 24, height: 24 }}
             />
             <Typography component="p" variant="h6">
-              Riley Carter
+              {user?.name || 'Loading...'}
             </Typography>
           </Stack>
         </Stack>

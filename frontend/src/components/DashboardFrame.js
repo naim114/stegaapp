@@ -108,7 +108,10 @@ export default function DashboardFrame(props) {
                     pageName={currentPage.name}
                     onClick={(pageName) => _handlePage(pageName)}
                 />
-                <AppNavbar />
+                <AppNavbar
+                    pageName={currentPage.name}
+                    onClick={(pageName) => _handlePage(pageName)}
+                />
                 {/* Main content */}
                 <Box
                     component="main"
