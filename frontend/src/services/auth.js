@@ -87,7 +87,7 @@ export const logout = async () => {
         return true;
     } catch (error) {
         console.error('Error logging out:', error);
-        addLog('System', `ERROR: ${error.code} - ${error.message}`);
+        addLog('SYSTEM', `ERROR: ${error.code} - ${error.message}`);
         throw error;
     }
 };

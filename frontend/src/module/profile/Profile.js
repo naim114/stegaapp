@@ -119,6 +119,7 @@ const ProfilePage = () => {
                         onChange={handleEmailChange}
                         fullWidth
                         sx={{ marginTop: 2 }}
+                        disabled
                     />
                 </Stack>
                 <Button
