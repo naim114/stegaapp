@@ -26,6 +26,7 @@ export const signUp = async (email, password, name) => {
             email,
             role: 'USER',
             createdAt: Date.now(),
+            photoURL: null,
         });
 
         // Store user details in Firestore

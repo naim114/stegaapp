@@ -141,7 +141,7 @@ export default function SignUp(props) {
             await signUp(email, password, name);
             console.log('User signed up successfully!');
             setSnackbarMsg("Sign up success! Please login first to continue.");
-            alert('Sign up success! Please login first to continue.');
+            toast('Sign up success! Please login first to continue.');
             setIsSnackbarShow(true);
 
             // Reset form fields after successful sign-up

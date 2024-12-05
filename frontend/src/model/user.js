@@ -53,10 +53,13 @@ export class User {
 export const getAllUsers = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, 'users'));
-        return querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
+        return querySnapshot.docs
+            .filter((doc) => doc.id)
+            .map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+        ;
     } catch (error) {
         console.error('Error fetching users:', error);
         throw error;

@@ -3,6 +3,7 @@ import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography } f
 import { CameraAlt } from '@mui/icons-material';
 import { getCurrentUser } from '../../services/auth';
 import { updateUser, uploadAvatar } from '../../model/user';
+import { toast } from 'react-toastify';
 
 const ProfilePage = () => {
     const [name, setName] = useState('');
@@ -47,10 +48,10 @@ const ProfilePage = () => {
                 setLoading(true);
                 const newAvatarURL = await uploadAvatar(userId, file); // Upload avatar
                 setAvatar(newAvatarURL); // Update state with new avatar URL
-                alert('Profile picture updated successfully!');
+                toast('Profile picture updated successfully!');
             } catch (error) {
                 console.error('Error updating profile picture:', error.message);
-                alert('Failed to update profile picture. Please try again.');
+                toast('Failed to update profile picture. Please try again.');
             } finally {
                 setLoading(false);
             }
@@ -62,10 +63,10 @@ const ProfilePage = () => {
             setLoading(true);
             const updatedData = { name, email };
             await updateUser(userId, updatedData);
-            alert('Profile updated successfully!');
+            toast('Profile updated successfully!');
         } catch (error) {
             console.error('Error updating profile:', error.message);
-            alert('Failed to update profile. Please try again.');
+            toast('Failed to update profile. Please try again.');
         } finally {
             setLoading(false);
         }

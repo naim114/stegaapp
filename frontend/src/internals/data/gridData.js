@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
-
+import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
@@ -901,7 +901,7 @@ export const scanReportColumns = [
         variant="contained"
         color="primary"
         size="small"
-        onClick={() => alert(`Viewing details for ${params.row.name}`)}
+        onClick={() => toast(`Viewing details for ${params.row.name}`)}
       >
         View More
       </Button>

@@ -21,9 +21,10 @@ export default function AdminPanel() {
         const fetchUsers = async () => {
             try {
                 const users = await getAllUsers();
+
                 const formattedUsers = users.map((user, index) => ({
                     id: index + 1,
-                    avatar: user.avatar || '',
+                    avatar: user.photoURL || '',
                     name: user.name,
                     email: user.email,
                     scansPerUser: user.scansPerUser || 0,
@@ -54,7 +55,7 @@ export default function AdminPanel() {
                             const matchedUser = users.find((u) => u.email === log.from);
                             if (matchedUser) {
                                 name = matchedUser.name;
-                                avatar = matchedUser.avatar || '';
+                                avatar = matchedUser.photoURL || '';
                             }
                         } catch {
                             console.warn(`User details not found for: ${log.from}`);
