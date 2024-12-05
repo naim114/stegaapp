@@ -2,23 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
 import { getCurrentUser } from '../../services/auth';
-import { updateUser } from '../../model/user';
+import { updateUser, uploadAvatar } from '../../model/user';
 
 const ProfilePage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
     const [loading, setLoading] = useState(true);
-    const [userId, setUserId] = useState(''); // Store user ID
+    const [userId, setUserId] = useState('');
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 setLoading(true);
                 const user = await getCurrentUser();
-                setUserId(user?.uid || ''); // Store user ID
+                setUserId(user?.uid || '');
                 setName(user?.name || '');
                 setEmail(user?.email || '');
+                console.log("avatar: " + user?.photoURL);
+
                 setAvatar(user?.photoURL || '/static/images/avatar/default.jpg');
             } catch (error) {
                 console.error('Error fetching user:', error.message);
@@ -38,21 +40,27 @@ const ProfilePage = () => {
         setEmail(event.target.value);
     };
 
-    const handleAvatarChange = (event) => {
+    const handleAvatarChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAvatar(reader.result);
-            };
-            reader.readAsDataURL(file);
+            try {
+                setLoading(true);
+                const newAvatarURL = await uploadAvatar(userId, file); // Upload avatar
+                setAvatar(newAvatarURL); // Update state with new avatar URL
+                alert('Profile picture updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile picture:', error.message);
+                alert('Failed to update profile picture. Please try again.');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
     const handleUpdateProfile = async () => {
         try {
             setLoading(true);
-            const updatedData = { name, email }; // Add more fields as needed
+            const updatedData = { name, email };
             await updateUser(userId, updatedData);
             alert('Profile updated successfully!');
         } catch (error) {
@@ -110,7 +118,6 @@ const ProfilePage = () => {
                         onChange={handleEmailChange}
                         fullWidth
                         sx={{ marginTop: 2 }}
-                        disabled
                     />
                 </Stack>
                 <Button

@@ -36,8 +36,12 @@ async function createWindow() {
 
 app.whenReady().then(() => {
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        const firebaseApiPatterns = ['identitytoolkit.googleapis.com', 'firestore.googleapis.com'];
-
+        const firebaseApiPatterns = [
+            'identitytoolkit.googleapis.com',
+            'firestore.googleapis.com',
+            'securetoken.googleapis.com',
+            'firebasestorage.googleapis.com',
+        ];
         // Skip modifying headers for Firebase API calls
         if (firebaseApiPatterns.some((pattern) => details.url.includes(pattern))) {
             callback({ responseHeaders: details.responseHeaders });

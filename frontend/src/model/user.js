@@ -1,13 +1,17 @@
 import { doc, getDoc, getDocs, collection, updateDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db } from '../firebase';
 import { addLog } from './log.js';
 
+const storage = getStorage();
+
 export class User {
-    constructor({ uid, name, email, role = 'USER', createdAt = Date.now() }) {
+    constructor({ uid, name, email, photoURL, role = 'USER', createdAt = Date.now() }) {
         this.uid = uid;
         this.name = name;
         this.email = email;
         this.role = role;
+        this.photoURL = photoURL;
         this.createdAt = createdAt;
     }
 
@@ -23,6 +27,7 @@ export class User {
             name: data.name,
             email: data.email,
             role: data.role,
+            photoURL: data.photoURL,
             createdAt: data.createdAt,
         });
     }
@@ -34,6 +39,7 @@ export class User {
             name: this.name,
             email: this.email,
             role: this.role,
+            photoURL: this.photoURL,
             createdAt: this.createdAt,
         };
     }
@@ -86,6 +92,23 @@ export const updateUser = async (userId, updatedData) => {
     } catch (error) {
         console.error('Error updating user:', error);
         addLog('System', `ERROR: Unable to update user ${userId} - ${error.message}`);
+        throw error;
+    }
+};
+
+
+export const uploadAvatar = async (userId, file) => {
+    try {
+        const storageRef = ref(storage, `avatars/${userId}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const photoURL = await getDownloadURL(snapshot.ref);
+
+        // Update the Firestore document with the new photoURL
+        await updateUser(userId, { photoURL });
+
+        return photoURL; // Return the new photoURL for frontend use
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
         throw error;
     }
 };
