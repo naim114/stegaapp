@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
 import CircularProgress from '@mui/material/CircularProgress';
 import CustomizedDataGrid from '../../components/CustomizedDataGrid';
-import SessionsChart from '../../components/SessionsChart';
+import ActivityChart from '../../components/ActivityChart';
 import PageViewsBarChart from '../../components/PageViewsBarChart';
 import { activityLogColumns, userColumns } from '../../internals/data/gridData';
 import { getAllLogs } from '../../model/log';
@@ -92,7 +92,7 @@ export default function AdminPanel() {
                 sx={{ mb: (theme) => theme.spacing(2) }}
             >
                 <Grid size={{ xs: 12, md: 6 }}>
-                    <SessionsChart />
+                    <ActivityChart />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                     <PageViewsBarChart />
