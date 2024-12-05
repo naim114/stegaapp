@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
-import { getCurrentUser } from '../../services/auth'; // Adjust path as needed
+import { getCurrentUser } from '../../services/auth';
+import { updateUser } from '../../model/user';
 
 const ProfilePage = () => {
-    // State for name, email, avatar, and loading
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
     const [loading, setLoading] = useState(true);
+    const [userId, setUserId] = useState(''); // Store user ID
 
-    // Fetch current user data on component mount
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                setLoading(true); // Start loading
+                setLoading(true);
                 const user = await getCurrentUser();
+                setUserId(user?.uid || ''); // Store user ID
                 setName(user?.name || '');
                 setEmail(user?.email || '');
                 setAvatar(user?.photoURL || '/static/images/avatar/default.jpg');
             } catch (error) {
                 console.error('Error fetching user:', error.message);
             } finally {
-                setLoading(false); // End loading
+                setLoading(false);
             }
         };
 
@@ -45,6 +46,20 @@ const ProfilePage = () => {
                 setAvatar(reader.result);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUpdateProfile = async () => {
+        try {
+            setLoading(true);
+            const updatedData = { name, email }; // Add more fields as needed
+            await updateUser(userId, updatedData);
+            alert('Profile updated successfully!');
+        } catch (error) {
+            console.error('Error updating profile:', error.message);
+            alert('Failed to update profile. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -74,7 +89,6 @@ const ProfilePage = () => {
             <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
                 Profile
             </Typography>
-            {/* Profile Section */}
             <Stack direction="row" spacing={4} sx={{ marginBottom: 4 }}>
                 <Avatar
                     alt={name}
@@ -96,6 +110,7 @@ const ProfilePage = () => {
                         onChange={handleEmailChange}
                         fullWidth
                         sx={{ marginTop: 2 }}
+                        disabled
                     />
                 </Stack>
                 <Button
@@ -112,6 +127,14 @@ const ProfilePage = () => {
                     />
                 </Button>
             </Stack>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUpdateProfile}
+                disabled={loading}
+            >
+                Update Profile
+            </Button>
         </Box>
     );
 };

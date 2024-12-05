@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { addLog } from './log.js';
 
@@ -73,6 +73,19 @@ export const getUser = async (userId) => {
     } catch (error) {
         console.error('Error fetching user:', error);
         addLog('System', `ERROR: Unable to fetch user ${userId} - ${error.message}`);
+        throw error;
+    }
+};
+
+export const updateUser = async (userId, updatedData) => {
+    try {
+        const userDocRef = doc(db, 'users', userId);
+        await updateDoc(userDocRef, updatedData);
+        console.log(`User ${userId} updated successfully.`);
+        addLog('System', `User ${userId} updated successfully.`);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        addLog('System', `ERROR: Unable to update user ${userId} - ${error.message}`);
         throw error;
     }
 };

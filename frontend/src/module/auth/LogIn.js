@@ -102,6 +102,7 @@ export default function LogIn(props) {
       console.log('User signed in successfully!', user);
 
       setSnackbarMsg('Signed in successfully. Welcome!');
+      alert('Signed in successfully. Welcome!');
       setIsSnackbarShow(true);
 
       navigate('/dashboard');
