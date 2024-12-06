@@ -729,12 +729,12 @@ export const activityLogColumns = [
       </div>
     ),
   },
-  { field: 'name', headerName: 'Name', flex: 1.5, minWidth: 150 },
-  { field: 'activity', headerName: 'Activity', width: 300 },
+  { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
+  { field: 'activity', headerName: 'Activity', flex: 1 },
   {
     field: 'date',
     headerName: 'Date',
-    width: 200,
+    flex: 1,
     renderCell: (params) => {
       const date = new Date(params.value);
       return date.toLocaleString(); // Formats date to local time
@@ -744,11 +744,11 @@ export const activityLogColumns = [
 
 
 export const activityLogSimplifyColumns = [
-  { field: 'activity', headerName: 'Activity', width: 300 },
+  { field: 'activity', headerName: 'Activity', flex: 1 },
   {
     field: 'date',
     headerName: 'Date',
-    width: 200,
+    flex: 1,
     renderCell: (params) => {
       const date = new Date(params.value);
       return date.toLocaleString(); // Formats date to local time

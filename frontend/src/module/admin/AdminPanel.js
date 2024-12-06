@@ -7,11 +7,12 @@ import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 import ActivityChart from '../../components/ActivityChart';
 import PageViewsBarChart from '../../components/PageViewsBarChart';
 import { activityLogColumns } from '../../internals/data/gridData';
-import { getAllLogs } from '../../model/log';
+import { getAllLogs, getLogsByUserEmail } from '../../model/log';
 import { getAllUsers } from '../../model/user';
 import { Button } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import UserDetailModal from './UserDetailModal';
+import UserLogModal from './UserLoglModal';
 
 export default function AdminPanel() {
     const [userRows, setUserRows] = useState([]);
@@ -19,7 +20,9 @@ export default function AdminPanel() {
     const [isUserLoading, setIsUserLoading] = useState(true);
     const [isActivityLogLoading, setIsActivityLogLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUserLog, setSelectedUserLog] = useState(null);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [isUserLogModalOpen, setIsUserLogModalOpen] = useState(false);
 
     const handleOpenUserModal = (user) => {
         setSelectedUser(user);
@@ -29,6 +32,28 @@ export default function AdminPanel() {
     const handleCloseUserModal = () => {
         setSelectedUser(null);
         setIsUserModalOpen(false);
+    };
+
+    const handleOpenUserLogModal = async (user) => {
+        setSelectedUser(user);
+        setIsUserLogModalOpen(true);
+
+        if (user) {
+            const fetchedLogs = await getLogsByUserEmail(user.email);
+            const rows = fetchedLogs.map((log, index) => ({
+                id: index,
+                activity: log.activity,
+                date: log.date,
+            }));
+            setSelectedUserLog(rows);
+        }
+
+    };
+
+    const handleCloseUserLogModal = () => {
+        setSelectedUser(null); // Clear selected user
+        setSelectedUserLog([]); // Clear logs
+        setIsUserLogModalOpen(false); // Close modal
     };
 
     const userColumns = [
@@ -75,7 +100,7 @@ export default function AdminPanel() {
                     <Button
                         variant="outlined"
                         size="small"
-                        onClick={() => console.log(`Viewing log for ${params.row.name}`)}
+                        onClick={() => handleOpenUserLogModal(params.row)}
                         sx={{ marginRight: 1 }}
                     >
                         Activity Log
@@ -93,7 +118,7 @@ export default function AdminPanel() {
                         variant="contained"
                         size="small"
                         color="primary"
-                        onClick={() => console.log(`Viewing profile for ${params.row.name}`)}
+                        onClick={() => handleOpenUserLogModal(params.row)}
                         sx={{ marginRight: 1 }}
                     >
                         Scan History
@@ -218,6 +243,12 @@ export default function AdminPanel() {
                 open={isUserModalOpen}
                 onClose={handleCloseUserModal}
                 user={selectedUser}
+            />
+            <UserLogModal
+                open={isUserLogModalOpen}
+                onClose={handleCloseUserLogModal}
+                user={selectedUser}
+                logs={selectedUserLog}
             />
         </Box>
     );
