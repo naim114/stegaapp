@@ -90,11 +90,11 @@ export const updateUser = async (userId, updatedData) => {
     try {
         const userDocRef = doc(db, 'users', userId);
         await updateDoc(userDocRef, updatedData);
-        console.log(`User ${userId} updated successfully.`);
-        addLog('SYSTEM', `User ${userId} updated successfully.`);
+        console.log(`${updatedData.email} update profile successfully.`);
+        addLog(updatedData.email, `${updatedData.email} update profile successfully.`);
     } catch (error) {
         console.error('Error updating user:', error);
-        addLog('SYSTEM', `ERROR: Unable to update user ${userId} - ${error.message}`);
+        addLog(updatedData.email, `ERROR: Unable to update user ${userId} - ${error.message}`);
         throw error;
     }
 };

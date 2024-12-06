@@ -6,15 +6,102 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 import ActivityChart from '../../components/ActivityChart';
 import PageViewsBarChart from '../../components/PageViewsBarChart';
-import { activityLogColumns, userColumns } from '../../internals/data/gridData';
+import { activityLogColumns } from '../../internals/data/gridData';
 import { getAllLogs } from '../../model/log';
 import { getAllUsers } from '../../model/user';
+import { Button } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import UserDetailModal from './UserDetailModal';
 
 export default function AdminPanel() {
     const [userRows, setUserRows] = useState([]);
     const [activityLogRows, setActivityLogRows] = useState([]);
     const [isUserLoading, setIsUserLoading] = useState(true);
     const [isActivityLogLoading, setIsActivityLogLoading] = useState(true);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+    const handleOpenUserModal = (user) => {
+        setSelectedUser(user);
+        setIsUserModalOpen(true);
+    };
+
+    const handleCloseUserModal = () => {
+        setSelectedUser(null);
+        setIsUserModalOpen(false);
+    };
+
+    const userColumns = [
+        {
+            field: 'avatar',
+            headerName: 'Avatar',
+            width: 100,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                    }}
+                >
+                    <Avatar
+                        sizes="small"
+                        alt={params.row.name}
+                        src={params.row.avatar}
+                        sx={{ width: 36, height: 36 }}
+                    />
+                </div>
+            ),
+        },
+        { field: 'name', headerName: 'Name', flex: 1.5, minWidth: 150 },
+        { field: 'email', headerName: 'Email', flex: 2, minWidth: 200 },
+        {
+            field: 'scansPerUser',
+            headerName: 'Scans per User',
+            headerAlign: 'right',
+            align: 'right',
+            flex: 1,
+            minWidth: 150,
+        },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            flex: 2,
+            minWidth: 300,
+            sortable: false,
+            renderCell: (params) => (
+                <>
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => console.log(`Viewing log for ${params.row.name}`)}
+                        sx={{ marginRight: 1 }}
+                    >
+                        Activity Log
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => handleOpenUserModal(params.row)}
+                        sx={{ marginRight: 1 }}
+                    >
+                        Profile
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => console.log(`Viewing profile for ${params.row.name}`)}
+                        sx={{ marginRight: 1 }}
+                    >
+                        Scan History
+                    </Button>
+                </>
+            ),
+        },
+    ];
 
     // Fetch user data
     useEffect(() => {
@@ -127,6 +214,11 @@ export default function AdminPanel() {
                     )}
                 </Grid>
             </Grid>
+            <UserDetailModal
+                open={isUserModalOpen}
+                onClose={handleCloseUserModal}
+                user={selectedUser}
+            />
         </Box>
     );
 }

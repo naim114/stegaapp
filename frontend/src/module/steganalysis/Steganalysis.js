@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -14,7 +15,6 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-
 
 export default function Steganalysis() {
     const [file, setFile] = React.useState(null);

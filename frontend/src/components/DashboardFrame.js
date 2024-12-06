@@ -27,7 +27,7 @@ import ActivityLog from '../module/activity/ActivityLog';
 import ActivityBreadcrumb from '../module/activity/ActivityLogBreadcrumb';
 import Profile from '../module/profile/Profile';
 import ProfileBreadcrumb from '../module/profile/ProfileBreadcrumb';
-import { getCurrentUser } from '../services/auth'; // Import authentication service
+import { getCurrentUser } from '../services/auth';
 
 const xThemeComponents = {
     ...chartsCustomizations,
