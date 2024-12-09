@@ -107,9 +107,12 @@ export default function SignUp(props) {
             setEmailErrorMessage('');
         }
 
-        if (!password || password.length < 6) {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{7,}$/;
+        if (!password || !passwordRegex.test(password)) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
+            setPasswordErrorMessage(
+                'Password must be more than 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+            );
             isValid = false;
         } else {
             setPasswordError(false);
