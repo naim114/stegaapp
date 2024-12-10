@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid2';
 import CircularProgress from '@mui/material/CircularProgress';
 import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 import ActivityChart from '../../components/ActivityChart';
-import PageViewsBarChart from '../../components/PageViewsBarChart';
 import { activityLogColumns } from '../../internals/data/gridData';
 import { getAllLogs, getLogsByUserEmail } from '../../model/log';
 import { getAllUsers } from '../../model/user';
@@ -13,6 +12,7 @@ import { Button } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import UserDetailModal from './UserDetailModal';
 import UserLogModal from './UserLoglModal';
+import ActivityBarChart from '../../components/ActivityBarChart';
 
 export default function AdminPanel() {
     const [userRows, setUserRows] = useState([]);
@@ -208,7 +208,7 @@ export default function AdminPanel() {
                     <ActivityChart />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                    <PageViewsBarChart />
+                    <ActivityBarChart />
                 </Grid>
             </Grid>
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>

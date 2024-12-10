@@ -72,8 +72,6 @@ export const getAllLogs = async () => {
         // Map through the documents and convert them into Log instances
         const logs = logSnapshot.docs.map(doc => Log.fromFirestore(doc));
 
-        console.log('All logs:', logs);
-
         return logs; // Return the array of Log instances
     } catch (error) {
         console.error('Error fetching logs:', error);
