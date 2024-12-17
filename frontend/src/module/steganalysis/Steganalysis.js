@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-backend-webgl'; // Use WebGL for faster computation
 
 const style = {
     position: 'absolute',
@@ -19,8 +21,29 @@ const style = {
 export default function Steganalysis() {
     const [file, setFile] = React.useState(null);
     const [open, setOpen] = React.useState(false);
+    const [result, setResult] = React.useState(null);
+    const [confidence, setConfidence] = React.useState(null);
+    const [model, setModel] = React.useState(null);
+
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false);
+        setResult(null);
+        setConfidence(null);
+    };
+
+    React.useEffect(() => {
+        const loadModel = async () => {
+            try {
+                const loadedModel = await tf.loadGraphModel("/model/model.json");
+                setModel(loadedModel);
+                console.log('Model loaded successfully');
+            } catch (error) {
+                console.error('Error loading model:', error);
+            }
+        };
+        loadModel();
+    }, []);
 
     function handleChange(e) {
         const selectedFile = e.target.files[0];
@@ -28,6 +51,42 @@ export default function Steganalysis() {
             setFile(URL.createObjectURL(selectedFile));
         }
     }
+
+    const handleSteganalysis = async () => {
+        if (!file) {
+            console.error('No file selected');
+            return;
+        }
+        if (!model) {
+            console.error('Model not loaded');
+            return;
+        }
+
+        try {
+            const img = new Image();
+            img.src = file;
+            img.onload = async () => {
+                const tensor = tf.browser.fromPixels(img)
+                    .resizeBilinear([224, 224])
+                    .expandDims()
+                    .div(255.0);
+
+                const prediction = model.predict(tensor);
+                const predictionData = await prediction.array(); // Use `array` to read data
+
+                const classId = predictionData[0]; // Update based on your model output
+                const confidence = predictionData[1]; // Update based on your model output
+
+                setResult(`Class ${classId}`);
+                setConfidence(`${(confidence * 100).toFixed(2)}%`);
+                handleOpen();
+
+                tensor.dispose();
+            };
+        } catch (error) {
+            console.error('Error during inference:', error);
+        }
+    };
 
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
@@ -54,13 +113,15 @@ export default function Steganalysis() {
                 </>
             )}
 
-            {/* Step 3 (conditionally render this section if a file is selected) */}
+            {/* Step 3 */}
             {file && (
                 <>
                     <Typography component="p" variant="p" sx={{ mt: 4, mb: 1 }}>
                         Step 3: Submit the image for steganalysis
                     </Typography>
-                    <Button variant="contained" onClick={handleOpen}>Steganalyse Now</Button>
+                    <Button variant="contained" onClick={handleSteganalysis}>
+                        Steganalyse Now
+                    </Button>
                 </>
             )}
 
@@ -87,14 +148,16 @@ export default function Steganalysis() {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Steganalysis Result
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Malicious Payload Type:
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 1 }}>
-                        Confidence Percentage:
-                    </Typography>
-
-                    <Button variant="contained" sx={{ mt: 4 }}>Save Result</Button>
+                    {result && (
+                        <>
+                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                Malicious Payload Type: {result}
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{ mt: 1 }}>
+                                Confidence Percentage: {confidence}
+                            </Typography>
+                        </>
+                    )}
                 </Box>
             </Modal>
         </Box>
