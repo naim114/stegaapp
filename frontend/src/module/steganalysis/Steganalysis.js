@@ -25,6 +25,7 @@ export default function Steganalysis() {
     const [result, setResult] = React.useState(null);
     const [confidence, setConfidence] = React.useState(null);
     const [model, setModel] = React.useState(null);
+    const [message, setMessage] = React.useState('');
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
@@ -34,6 +35,12 @@ export default function Steganalysis() {
     };
 
     React.useEffect(() => {
+        // Fetch data from the Flask backend
+        fetch('http://127.0.0.1:5000/api/test')
+            .then((response) => response.json())
+            .then((data) => setMessage(data.message))
+            .catch((error) => console.error('Error fetching data:', error));
+
         const loadModel = async () => {
             try {
                 // Set TensorFlow.js backend
@@ -104,6 +111,10 @@ export default function Steganalysis() {
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
             <Typography component="h4" variant="h4" sx={{ mb: 1 }}>
                 Steganalysis
+            </Typography>
+
+            <Typography component="p" variant="p" sx={{ mb: 3, fontWeight: 'bold' }}>
+                {message}
             </Typography>
 
             <Typography component="p" variant="p" sx={{ mb: 3, fontWeight: 'bold' }}>

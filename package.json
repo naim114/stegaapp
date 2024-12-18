@@ -4,7 +4,8 @@
   "description": "stega app",
   "main": "main.js",
   "scripts": {
-    "start": "concurrently \"npm start --prefix frontend\" \"electron .\"",
+    "start": "concurrently \"npm start --prefix frontend\" \"electron .\" \"npm run start-backend\"",
+    "start-backend": "python backend/app.py",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ainisa",
