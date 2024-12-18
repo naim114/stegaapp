@@ -53,6 +53,18 @@ export default function Steganalysis() {
             return;
         }
 
+        fetch('http://localhost:5000/api/classify', {
+            method: 'POST',
+            body: file,
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Flask API response:', data);
+            })
+            .catch(error => {
+                console.error('Error calling Flask API:', error);
+            });
+
         const fileName = file.name.toLowerCase();
         const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
 
