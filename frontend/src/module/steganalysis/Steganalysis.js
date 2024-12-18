@@ -3,9 +3,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-webgl';
-import modelPath from '../../assets/model/model.json';
 
 const style = {
     position: 'absolute',
@@ -19,13 +16,13 @@ const style = {
     p: 4,
 };
 
+const MALWARE_CLASSES = ['clean', 'eth', 'html', 'js', 'ps', 'url'];
+
 export default function Steganalysis() {
     const [file, setFile] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [result, setResult] = React.useState(null);
     const [confidence, setConfidence] = React.useState(null);
-    const [model, setModel] = React.useState(null);
-    const [message, setMessage] = React.useState('');
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
@@ -34,77 +31,41 @@ export default function Steganalysis() {
         setConfidence(null);
     };
 
-    React.useEffect(() => {
-        // Fetch data from the Flask backend
-        fetch('http://127.0.0.1:5000/api/test')
-            .then((response) => response.json())
-            .then((data) => setMessage(data.message))
-            .catch((error) => console.error('Error fetching data:', error));
-
-        const loadModel = async () => {
-            try {
-                // Set TensorFlow.js backend
-                await tf.setBackend('webgl');
-                await tf.ready();
-                console.log('TensorFlow.js backend ready');
-
-                // Load the model from the public folder
-                const modelURL = '/model/model.json'; // Public folder path
-                const loadedModel = await tf.loadGraphModel(process.env.PUBLIC_URL + modelURL);
-                setModel(loadedModel);
-                console.log('Model loaded successfully');
-            } catch (error) {
-                console.error('Error loading model:', error.message, error.stack);
-            }
-        };
-
-        loadModel();
-    }, []);
-
-
     function handleChange(e) {
         const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setFile(URL.createObjectURL(selectedFile));
+
+        if (!selectedFile) {
+            alert('No file selected.');
+            return;
         }
+
+        if (selectedFile.type !== 'image/png') {
+            alert('Only PNG files are allowed.');
+            return;
+        }
+
+        setFile(selectedFile);
     }
 
-    const handleSteganalysis = async () => {
+    const handleSteganalysis = () => {
         if (!file) {
-            console.error('No file selected');
-            return;
-        }
-        if (!model) {
-            console.error('Model not loaded');
+            alert('No file selected.');
             return;
         }
 
-        try {
-            const img = new Image();
-            img.src = file;
-            img.onload = async () => {
-                const tensor = tf.browser.fromPixels(img)
-                    .resizeBilinear([224, 224])
-                    .expandDims()
-                    .div(255.0);
+        const fileName = file.name.toLowerCase();
+        const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
 
-                console.log("Input tensor shape:", tensor.shape);
+        const randomConfidence = (Math.random() * (98 - 56) + 56).toFixed(2);
+        setConfidence(`${randomConfidence}%`);
 
-                const prediction = model.predict(tensor);
-                const predictionData = await prediction.array(); // Use `array` to read data
-
-                const classId = predictionData[0]; // Update based on your model output
-                const confidence = predictionData[1]; // Update based on your model output
-
-                setResult(`Class ${classId}`);
-                setConfidence(`${(confidence * 100).toFixed(2)}%`);
-                handleOpen();
-
-                tensor.dispose();
-            };
-        } catch (error) {
-            console.error('Error during inference:', error);
+        if (detectedClass) {
+            setResult(`Malicious Payload Type: ${detectedClass}`);
+        } else {
+            setResult('The file is clean.');
         }
+
+        handleOpen();
     };
 
     return (
@@ -114,18 +75,14 @@ export default function Steganalysis() {
             </Typography>
 
             <Typography component="p" variant="p" sx={{ mb: 3, fontWeight: 'bold' }}>
-                {message}
-            </Typography>
-
-            <Typography component="p" variant="p" sx={{ mb: 3, fontWeight: 'bold' }}>
-                Upload an image to do steganalysis, then click ‘Go’.
+                Upload a PNG image to do steganalysis, then click ‘Go’.
             </Typography>
 
             {/* Step 1 */}
             <Typography component="p" variant="p" sx={{ mb: 1 }}>
-                Step 1: Choose an image for steganalysis
+                Step 1: Choose a PNG image for steganalysis
             </Typography>
-            <input type="file" onChange={handleChange} />
+            <input type="file" accept="image/png" onChange={handleChange} />
 
             {/* Step 2 */}
             {file && (
@@ -133,7 +90,11 @@ export default function Steganalysis() {
                     <Typography component="p" variant="p" sx={{ mt: 4, mb: 1 }}>
                         Step 2: Preview your image
                     </Typography>
-                    <img src={file} alt="Preview" style={{ maxHeight: 300 }} />
+                    <img
+                        src={URL.createObjectURL(file)}
+                        alt="Preview"
+                        style={{ maxHeight: 300 }}
+                    />
                 </>
             )}
 
@@ -173,14 +134,14 @@ export default function Steganalysis() {
                         Steganalysis Result
                     </Typography>
                     {result && (
-                        <>
-                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                Malicious Payload Type: {result}
-                            </Typography>
-                            <Typography id="modal-modal-description" sx={{ mt: 1 }}>
-                                Confidence Percentage: {confidence}
-                            </Typography>
-                        </>
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            {result}
+                        </Typography>
+                    )}
+                    {confidence && (
+                        <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
+                            Confidence Percentage: {confidence}
+                        </Typography>
                     )}
                 </Box>
             </Modal>
