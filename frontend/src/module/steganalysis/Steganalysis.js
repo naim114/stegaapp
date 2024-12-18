@@ -4,7 +4,8 @@ import Box from '@mui/material/Box';
 import { Button, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-webgl'; // Use WebGL for faster computation
+import '@tensorflow/tfjs-backend-webgl';
+import modelPath from '../../assets/model/model.json';
 
 const style = {
     position: 'absolute',
@@ -35,15 +36,24 @@ export default function Steganalysis() {
     React.useEffect(() => {
         const loadModel = async () => {
             try {
-                const loadedModel = await tf.loadGraphModel("/model/model.json");
+                // Set TensorFlow.js backend
+                await tf.setBackend('webgl');
+                await tf.ready();
+                console.log('TensorFlow.js backend ready');
+
+                // Load the model from the public folder
+                const modelURL = '/model/model.json'; // Public folder path
+                const loadedModel = await tf.loadGraphModel(process.env.PUBLIC_URL + modelURL);
                 setModel(loadedModel);
                 console.log('Model loaded successfully');
             } catch (error) {
-                console.error('Error loading model:', error);
+                console.error('Error loading model:', error.message, error.stack);
             }
         };
+
         loadModel();
     }, []);
+
 
     function handleChange(e) {
         const selectedFile = e.target.files[0];
@@ -71,6 +81,8 @@ export default function Steganalysis() {
                     .expandDims()
                     .div(255.0);
 
+                console.log("Input tensor shape:", tensor.shape);
+
                 const prediction = model.predict(tensor);
                 const predictionData = await prediction.array(); // Use `array` to read data
 
@@ -93,6 +105,7 @@ export default function Steganalysis() {
             <Typography component="h4" variant="h4" sx={{ mb: 1 }}>
                 Steganalysis
             </Typography>
+
             <Typography component="p" variant="p" sx={{ mb: 3, fontWeight: 'bold' }}>
                 Upload an image to do steganalysis, then click ‘Go’.
             </Typography>
