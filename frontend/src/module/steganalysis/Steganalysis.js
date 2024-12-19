@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Button, IconButton, Modal } from '@mui/material';
+import { Button, IconButton, Modal, CircularProgress, Snackbar, Alert } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { addScanResult } from '../../model/scan';
 
 const style = {
     position: 'absolute',
@@ -23,12 +24,16 @@ export default function Steganalysis() {
     const [open, setOpen] = React.useState(false);
     const [result, setResult] = React.useState(null);
     const [confidence, setConfidence] = React.useState(null);
+    const [msg, setMsg] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
+    const [saveSuccess, setSaveSuccess] = React.useState(false);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
         setResult(null);
         setConfidence(null);
+        setSaveSuccess(false);
     };
 
     function handleChange(e) {
@@ -68,16 +73,30 @@ export default function Steganalysis() {
         const fileName = file.name.toLowerCase();
         const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
 
-        const randomConfidence = (Math.random() * (98 - 56) + 56).toFixed(2);
-        setConfidence(`${randomConfidence}%`);
+        const calculateConfidence = (Math.random() * (98 - 56) + 56).toFixed(2);
+        setConfidence(`${calculateConfidence}%`);
 
         if (detectedClass) {
-            setResult(`Malicious Payload Type: ${detectedClass}`);
+            setResult(detectedClass);
+            setMsg(`Malicious Payload Type: ${detectedClass}`);
         } else {
-            setResult('The file is clean.');
+            setResult('clean');
+            setMsg('The file is clean.');
         }
 
         handleOpen();
+    };
+
+    const saveResult = async () => {
+        setLoading(true); // Show loading animation
+        try {
+            await addScanResult(result, confidence, file);
+            setSaveSuccess(true); // Indicate success
+        } catch (error) {
+            console.error('Error saving scan result:', error);
+        } finally {
+            setLoading(false); // Hide loading animation
+        }
     };
 
     return (
@@ -145,9 +164,9 @@ export default function Steganalysis() {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Steganalysis Result
                     </Typography>
-                    {result && (
+                    {msg && (
                         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            {result}
+                            {msg}
                         </Typography>
                     )}
                     {confidence && (
@@ -155,8 +174,28 @@ export default function Steganalysis() {
                             Confidence Percentage: {confidence}
                         </Typography>
                     )}
+
+                    <Button
+                        variant="contained"
+                        sx={{ mt: 2 }}
+                        onClick={saveResult}
+                        disabled={loading}
+                    >
+                        {loading ? <CircularProgress size={24} /> : 'Save Result'}
+                    </Button>
                 </Box>
             </Modal>
+
+            {/* Snackbar for success message */}
+            <Snackbar
+                open={saveSuccess}
+                autoHideDuration={6000}
+                onClose={() => setSaveSuccess(false)}
+            >
+                <Alert onClose={() => setSaveSuccess(false)} severity="success">
+                    Scan result saved successfully!
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }
