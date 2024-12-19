@@ -1,9 +1,8 @@
-import * as React from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import { Button, IconButton, Modal, CircularProgress, Snackbar, Alert } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Typography, Box, Button, IconButton, Modal, CircularProgress, Snackbar, Alert } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { addScanResult } from '../../model/scan';
+import { getCurrentUser } from '../../services/auth';
 
 const style = {
     position: 'absolute',
@@ -20,13 +19,27 @@ const style = {
 const MALWARE_CLASSES = ['clean', 'eth', 'html', 'js', 'ps', 'url'];
 
 export default function Steganalysis() {
-    const [file, setFile] = React.useState(null);
-    const [open, setOpen] = React.useState(false);
-    const [result, setResult] = React.useState(null);
-    const [confidence, setConfidence] = React.useState(null);
-    const [msg, setMsg] = React.useState(null);
-    const [loading, setLoading] = React.useState(false);
-    const [saveSuccess, setSaveSuccess] = React.useState(false);
+    const [file, setFile] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [result, setResult] = useState(null);
+    const [confidence, setConfidence] = useState(null);
+    const [msg, setMsg] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const user = await getCurrentUser();
+                setUserEmail(user?.email || '');
+            } catch (error) {
+                console.error('Error fetching user:', error.message);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
@@ -88,9 +101,14 @@ export default function Steganalysis() {
     };
 
     const saveResult = async () => {
+        if (!userEmail) {
+            alert('User email not available. Please log in.');
+            return;
+        }
+
         setLoading(true); // Show loading animation
         try {
-            await addScanResult(result, confidence, file);
+            await addScanResult(result, confidence, file, userEmail); // Pass userEmail to addScanResult
             setSaveSuccess(true); // Indicate success
         } catch (error) {
             console.error('Error saving scan result:', error);

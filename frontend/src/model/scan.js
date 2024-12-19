@@ -6,11 +6,12 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const tbName = "scan_results";
 
 export class ScanResult {
-    constructor({ date = new Date().toISOString(), prediction, confidence, photoURL }) {
+    constructor({ date = new Date().toISOString(), prediction, confidence, photoURL, user }) {
         this.date = date;
         this.prediction = prediction;
         this.confidence = confidence;
         this.photoURL = photoURL;
+        this.user = user;
     }
 
     // Convert ScanResult instance to plain object for Firestore
@@ -20,12 +21,13 @@ export class ScanResult {
             prediction: this.prediction,
             confidence: this.confidence,
             photoURL: this.photoURL,
+            user: this.user,
         };
     }
 
     // Method to display scan result information
     displayResult() {
-        return `[${this.date}] Prediction: ${this.prediction}, Confidence: ${this.confidence}, PhotoURL: ${this.photoURL}`;
+        return `[${this.date}] Prediction: ${this.prediction}, Confidence: ${this.confidence}, PhotoURL: ${this.photoURL}, User: ${this.user}`;
     }
 
     // Static method to create a ScanResult instance from Firestore data
@@ -40,12 +42,13 @@ export class ScanResult {
             prediction: data.prediction,
             confidence: data.confidence,
             photoURL: data.photoURL,
+            user: data.user,
         });
     }
 }
 
 // Function to add a scan result to Firestore
-export const addScanResult = async (prediction, confidence, file) => {
+export const addScanResult = async (prediction, confidence, file, userEmail) => {
     try {
         // Upload the file to Firebase Storage
         const storage = getStorage();
@@ -62,6 +65,7 @@ export const addScanResult = async (prediction, confidence, file) => {
             prediction,
             confidence,
             photoURL,
+            user: userEmail,
         });
 
         console.log("Scan result added!");
@@ -85,17 +89,17 @@ export const getAllScanResults = async () => {
     }
 };
 
-// Function to get scan results by prediction
-export const getScanResultsByPrediction = async (prediction) => {
+// Function to get scan results by user
+export const getScanResultsByUser = async (userEmail) => {
     try {
         const scanResultCollection = collection(db, tbName);
-        const predictionQuery = query(scanResultCollection, where("prediction", "==", prediction));
-        const scanResultSnapshot = await getDocs(predictionQuery);
+        const userQuery = query(scanResultCollection, where("user", "==", userEmail));
+        const scanResultSnapshot = await getDocs(userQuery);
 
         const results = scanResultSnapshot.docs.map(doc => ScanResult.fromFirestore(doc));
         return results;
     } catch (error) {
-        console.error(`Error fetching scan results for prediction "${prediction}":`, error);
+        console.error(`Error fetching scan results for user "${userEmail}":`, error);
         throw error;
     }
 };
