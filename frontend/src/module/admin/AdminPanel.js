@@ -8,10 +8,12 @@ import ActivityChart from '../../components/ActivityChart';
 import { activityLogColumns } from '../../internals/data/gridData';
 import { getAllLogs, getLogsByUserEmail } from '../../model/log';
 import { getAllUsers } from '../../model/user';
+import { getScanResultsByUser } from '../../model/scan';
 import { Button } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import UserDetailModal from './UserDetailModal';
 import UserLogModal from './UserLoglModal';
+import ScanHistoryModal from './ScanHistoryModal'; // New modal for scan history
 import ActivityBarChart from '../../components/ActivityBarChart';
 
 export default function AdminPanel() {
@@ -23,6 +25,8 @@ export default function AdminPanel() {
     const [selectedUserLog, setSelectedUserLog] = useState(null);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isUserLogModalOpen, setIsUserLogModalOpen] = useState(false);
+    const [isScanHistoryModalOpen, setIsScanHistoryModalOpen] = useState(false);
+    const [scanHistory, setScanHistory] = useState([]);
 
     const handleOpenUserModal = (user) => {
         setSelectedUser(user);
@@ -47,13 +51,35 @@ export default function AdminPanel() {
             }));
             setSelectedUserLog(rows);
         }
-
     };
 
     const handleCloseUserLogModal = () => {
-        setSelectedUser(null); // Clear selected user
-        setSelectedUserLog([]); // Clear logs
-        setIsUserLogModalOpen(false); // Close modal
+        setSelectedUser(null);
+        setSelectedUserLog([]);
+        setIsUserLogModalOpen(false);
+    };
+
+    const handleOpenScanHistoryModal = async (user) => {
+        setSelectedUser(user);
+        setIsScanHistoryModalOpen(true);
+
+        if (user) {
+            const fetchedScanHistory = await getScanResultsByUser(user.email);
+            const rows = fetchedScanHistory.map((scan, index) => ({
+                id: index,
+                prediction: scan.prediction,
+                confidence: scan.confidence,
+                photoURL: scan.photoURL,
+                date: new Date(scan.date).toLocaleString(),
+            }));
+            setScanHistory(rows);
+        }
+    };
+
+    const handleCloseScanHistoryModal = () => {
+        setSelectedUser(null);
+        setScanHistory([]);
+        setIsScanHistoryModalOpen(false);
     };
 
     const userColumns = [
@@ -117,8 +143,8 @@ export default function AdminPanel() {
                     <Button
                         variant="contained"
                         size="small"
-                        color="primary"
-                        onClick={() => handleOpenUserLogModal(params.row)}
+                        color="secondary"
+                        onClick={() => handleOpenScanHistoryModal(params.row)}
                         sx={{ marginRight: 1 }}
                     >
                         Scan History
@@ -249,6 +275,12 @@ export default function AdminPanel() {
                 onClose={handleCloseUserLogModal}
                 user={selectedUser}
                 logs={selectedUserLog}
+            />
+            <ScanHistoryModal
+                open={isScanHistoryModalOpen}
+                onClose={handleCloseScanHistoryModal}
+                user={selectedUser}
+                scans={scanHistory}
             />
         </Box>
     );
