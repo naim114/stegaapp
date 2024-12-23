@@ -8,12 +8,3 @@ window.addEventListener('DOMContentLoaded', () => {
         replaceText(`${type}-version`, process.versions[type])
     }
 })
-
-// const { contextBridge, ipcRenderer } = require("electron");
-
-// contextBridge.exposeInMainWorld("electron", {
-//     firebase: {
-//         sendData: (data) => ipcRenderer.send("firebase:add-user", data),
-//         onDataReceived: (callback) => ipcRenderer.on("firebase:data-received", callback),
-//     },
-// });

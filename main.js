@@ -86,18 +86,3 @@ db.collection("logs").add({
 }).catch((error) => {
     console.error("Error adding log (main): ", error);
 });
-
-// ipcMain.handle("firebase:add-user", async (_, userData) => {
-//     try {
-//         await db.collection("users").doc(userData.uid).set({
-//             uid: userData.uid,
-//             name: userData.name,
-//             email: userData.email,
-//             role: "USER",
-//             createdAt: new Date().toISOString(),
-//         });
-//         return { success: true, message: "User added successfully" };
-//     } catch (error) {
-//         return { success: false, message: error.message };
-//     }
-// });

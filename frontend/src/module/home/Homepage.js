@@ -1,46 +1,3 @@
-// import * as React from 'react';
-// import Typography from '@mui/material/Typography';
-// import Grid from '@mui/material/Grid2';
-// import Box from '@mui/material/Box';
-// import Copyright from '../../internals/components/Copyright';
-// import CustomizedDataGrid from '../../components/CustomizedDataGrid';
-// import PageViewsBarChart from '../../components/PageViewsBarChart';
-// import SessionsChart from '../../components/SessionsChart';
-// import { columns, rows } from '../../internals/data/gridData';
-
-// export default function Home() {
-//   return (
-//     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-//       {/* cards */}
-//       <Typography component="h2" variant="h2" sx={{ mb: 2 }}>
-//         Welcome to stegoapp
-//       </Typography>
-//       <Grid
-//         container
-//         spacing={2}
-//         columns={12}
-//         sx={{ mb: (theme) => theme.spacing(2) }}
-//       >
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <SessionsChart />
-//         </Grid>
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <PageViewsBarChart />
-//         </Grid>
-//       </Grid>
-//       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-//         Details
-//       </Typography>
-//       <Grid container spacing={2} columns={6}>
-//         <Grid size={{ xs: 12, lg: 9 }}>
-//           <CustomizedDataGrid columns={columns} rows={rows} />
-//         </Grid>
-//       </Grid>
-//       <Copyright sx={{ my: 4 }} />
-//     </Box>
-//   );
-// }
-
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@mui/material/Avatar';
@@ -49,17 +6,9 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid2';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/material/styles';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import RssFeedRoundedIcon from '@mui/icons-material/RssFeedRounded';
-import { Container } from '@mui/material';
 
 const cardData = [
   {
@@ -196,27 +145,6 @@ Author.propTypes = {
     }),
   ).isRequired,
 };
-
-export function Search() {
-  return (
-    <FormControl sx={{ width: { xs: '100%', md: '25ch' } }} variant="outlined">
-      <OutlinedInput
-        size="small"
-        id="search"
-        placeholder="Search…"
-        sx={{ flexGrow: 1 }}
-        startAdornment={
-          <InputAdornment position="start" sx={{ color: 'text.primary' }}>
-            <SearchRoundedIcon fontSize="small" />
-          </InputAdornment>
-        }
-        inputProps={{
-          'aria-label': 'search',
-        }}
-      />
-    </FormControl>
-  );
-}
 
 export default function Home() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
