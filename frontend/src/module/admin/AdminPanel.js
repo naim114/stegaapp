@@ -108,14 +108,6 @@ export default function AdminPanel() {
         { field: 'name', headerName: 'Name', flex: 1.5, minWidth: 150 },
         { field: 'email', headerName: 'Email', flex: 2, minWidth: 200 },
         {
-            field: 'scansPerUser',
-            headerName: 'Scans per User',
-            headerAlign: 'right',
-            align: 'right',
-            flex: 1,
-            minWidth: 150,
-        },
-        {
             field: 'actions',
             headerName: 'Actions',
             flex: 2,

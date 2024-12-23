@@ -51,9 +51,6 @@ export default function UserDetailModal({ open, onClose, user }) {
                         <Typography variant="body1" sx={{ mb: 1 }}>
                             <strong>Email:</strong> {user.email}
                         </Typography>
-                        <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Scans Per User:</strong> {user.scansPerUser}
-                        </Typography>
                     </>
                 ) : (
                     <Typography variant="body1">No user data available.</Typography>
