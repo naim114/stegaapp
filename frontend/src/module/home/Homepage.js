@@ -14,6 +14,8 @@ import { styled } from '@mui/material/styles';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { format } from 'date-fns';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 
 // News API Configuration
 const NEWS_API_URL = 'https://newsapi.org/v2/everything';
@@ -83,8 +85,10 @@ const StyledTypography = styled(Typography)({
 function Home() {
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [loading, setLoading] = useState(true); // New loading state
 
   const fetchArticles = async () => {
+    setLoading(true); // Start loading
     try {
       const requests = CATEGORIES.map(category =>
         axios.get(NEWS_API_URL, {
@@ -108,10 +112,10 @@ function Home() {
       );
 
       setArticles(filteredArticles);
-
-      setArticles(allArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -144,83 +148,93 @@ function Home() {
 
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-      <Typography component="h2" variant="h4" sx={{ mb: 1 }}>
-        Welcome to StegoApp
-      </Typography>
-      <Box>
-        <StyledSlider {...sliderSettings}>
-          {articles.slice(0, 5).map((article, index) => (
-            <Box key={index} sx={{ padding: 1 }}>
-              <StyledCard onClick={() => handleCardClick(article)}>
-                <CardMedia
-                  component="img"
-                  image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
-                  alt={article.source.name}
-                  sx={{
-                    aspectRatio: '16/9',
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                  }}
-                />
-                <StyledCardContent>
-                  <Typography variant="caption">{article.source.name}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {article.title}
-                  </Typography>
-                </StyledCardContent>
-              </StyledCard>
-            </Box>
-          ))}
-        </StyledSlider>
-      </Box>
-      <Typography component="h3" variant="h5" sx={{ mb: 2, mt: 2 }}>
-        More Articles
-      </Typography>
-      <Grid container spacing={4}>
-        {articles.map((article, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <StyledCard onClick={() => handleCardClick(article)}>
-              <CardMedia
-                component="img"
-                image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
-                alt={article.source.name}
-                sx={{
-                  aspectRatio: '16/9',
-                  borderBottom: '1px solid',
-                  borderColor: 'divider',
-                }}
-              />
-              <StyledCardContent2>
-                <Typography variant="caption">{article.source.name}</Typography>
-                <Typography variant="h6">{article.title}</Typography>
-                <StyledTypography variant="body2" color="textSecondary">
-                  {article.description}
-                </StyledTypography>
-              </StyledCardContent2>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 2,
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Box
-                  sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}
-                >
-                  <Typography variant="caption">
-                    {article.author}
-                  </Typography>
+      {/* Backdrop with CircularProgress */}
+      <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {!loading && (
+        <>
+          <Typography component="h2" variant="h4" sx={{ mb: 1 }}>
+            Welcome to StegoApp
+          </Typography>
+          <Box>
+            <StyledSlider {...sliderSettings}>
+              {articles.slice(0, 5).map((article, index) => (
+                <Box key={index} sx={{ padding: 1 }}>
+                  <StyledCard onClick={() => handleCardClick(article)}>
+                    <CardMedia
+                      component="img"
+                      image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                      alt={article.source.name}
+                      sx={{
+                        aspectRatio: '16/9',
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    />
+                    <StyledCardContent>
+                      <Typography variant="caption">{article.source.name}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {article.title}
+                      </Typography>
+                    </StyledCardContent>
+                  </StyledCard>
                 </Box>
-                <Typography variant="caption">
-                  {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
-                </Typography>
-              </Box>
-            </StyledCard>
+              ))}
+            </StyledSlider>
+          </Box>
+          <Typography component="h3" variant="h5" sx={{ mb: 2, mt: 2 }}>
+            More Articles
+          </Typography>
+          <Grid container spacing={4}>
+            {articles.map((article, index) => (
+              <Grid item xs={12} md={6} key={index}>
+                <StyledCard onClick={() => handleCardClick(article)}>
+                  <CardMedia
+                    component="img"
+                    image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                    alt={article.source.name}
+                    sx={{
+                      aspectRatio: '16/9',
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  />
+                  <StyledCardContent2>
+                    <Typography variant="caption">{article.source.name}</Typography>
+                    <Typography variant="h6">{article.title}</Typography>
+                    <StyledTypography variant="body2" color="textSecondary">
+                      {article.description}
+                    </StyledTypography>
+                  </StyledCardContent2>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: 2,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Box
+                      sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}
+                    >
+                      <Typography variant="caption">
+                        {article.author}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption">
+                      {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                    </Typography>
+                  </Box>
+                </StyledCard>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </>
+      )}
+
       <Dialog open={!!selectedArticle} onClose={handleCloseModal} fullScreen>
         {selectedArticle && (
           <Box sx={{ padding: 4 }}>
@@ -263,7 +277,7 @@ function Home() {
           </Box>
         )}
       </Dialog>
-    </Box >
+    </Box>
   );
 }
 
