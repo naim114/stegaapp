@@ -1,5 +1,5 @@
 import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { addLog } from '../model/log';
 import { User } from '../model/user';
@@ -117,6 +117,20 @@ export const getCurrentUser = async () => {
         return userData;
     } catch (error) {
         console.error('Error getting current user:', error.message);
+        throw error;
+    }
+};
+
+export const forgotPassword = async (email) => {
+    try {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, email);
+        console.log(`Password reset email sent to: ${email}`);
+
+        addLog(email, `Password reset email sent.`);
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        addLog(email, `ERROR: ${error.code} - ${error.message}`);
         throw error;
     }
 };

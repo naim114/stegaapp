@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 import MuiCard from '@mui/material/Card';
 import Link from '@mui/material/Link';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
-import { signIn, getCurrentUser } from '../../services/auth';
-import { CircularProgress, Snackbar } from '@mui/material';
-import { toast } from 'react-toastify';
+import { forgotPassword } from '../../services/auth';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -38,7 +35,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-const LogInContainer = styled(Stack)(({ theme }) => ({
+const ForgotPasswordContainer = styled(Box)(({ theme }) => ({
   height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
   minHeight: '100%',
   padding: theme.spacing(2),
@@ -61,97 +58,47 @@ const LogInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function LogIn(props) {
+export default function ForgotPassword(props) {
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
   const [isSnackbarShow, setIsSnackbarShow] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  // Check for current user on initial render
-  useEffect(() => {
-    const checkCurrentUser = async () => {
-      try {
-        const user = await getCurrentUser();
-        if (user) {
-          console.log("current user: " + user);
-
-          navigate('/dashboard');
-        }
-      } catch (error) {
-        console.log('No user currently signed in:', error.message);
-      }
-    };
-
-    checkCurrentUser();
-  }, [navigate]);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!validateInputs()) return;
 
     const data = new FormData(event.currentTarget);
+    const email = data.get('email');
 
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true);
+      setEmailErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setEmailError(false);
+    setEmailErrorMessage('');
     setLoading(true);
 
     try {
-      const user = await signIn(data.get('email'), data.get('password'));
-      console.log('User signed in successfully!', user);
-
-      setSnackbarMsg('Signed in successfully. Welcome!');
-      toast('Signed in successfully. Welcome!');
+      await forgotPassword(email);
+      setSnackbarMsg('Password reset email sent. Check your inbox.');
       setIsSnackbarShow(true);
-
-      navigate('/dashboard');
     } catch (err) {
-      if (err.message.includes('auth/invalid-credential')) {
-        setSnackbarMsg('Invalid credential. Please try again.');
-      } else {
-        setSnackbarMsg(err.message);
-      }
-
+      setSnackbarMsg(err.message);
       setIsSnackbarShow(true);
-      console.log('Error signing in: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    return isValid;
-  };
-
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <LogInContainer direction="column" justifyContent="space-between">
+      <ForgotPasswordContainer>
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
           <Typography
@@ -159,7 +106,7 @@ export default function LogIn(props) {
             variant="h4"
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign in
+            Forgot Password
           </Typography>
           <Box
             component="form"
@@ -190,45 +137,19 @@ export default function LogIn(props) {
                 disabled={loading}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-                disabled={loading}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'Log In'}
+              {loading ? <CircularProgress size={24} /> : 'Reset Password'}
             </Button>
           </Box>
           <Typography sx={{ textAlign: 'center' }}>
-            Don&apos;t have an account?{' '}
+            Remember your password?{' '}
             <Link variant="body2" sx={{ alignSelf: 'center' }}>
-              <RouterLink to="/sign-up">Sign up</RouterLink>
-            </Link>
-          </Typography>
-          <Typography sx={{ textAlign: 'center' }}>
-            <Link variant="body2" sx={{ alignSelf: 'center' }}>
-              <RouterLink to="/pwd">Forgot your password?</RouterLink>
+              <RouterLink to="/">Log In</RouterLink>
             </Link>
           </Typography>
         </Card>
@@ -239,7 +160,7 @@ export default function LogIn(props) {
           onClose={() => setIsSnackbarShow(false)}
           message={snackbarMsg}
         />
-      </LogInContainer>
+      </ForgotPasswordContainer>
     </AppTheme>
   );
 }
