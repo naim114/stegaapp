@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, CircularProgress, Stack, Snackbar } from '@mui/material';
-import { getCurrentUser, forgotPassword, resendVerificationEmail, updateEmailAddress, logout } from '../../services/auth';
+import { getCurrentUser, forgotPassword, resendVerificationEmail, updateEmailAddress } from '../../services/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,6 @@ const SecurityPage = () => {
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
-    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     useEffect(() => {
         const fetchUser = async () => {
