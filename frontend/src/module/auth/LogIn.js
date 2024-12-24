@@ -106,10 +106,10 @@ export default function LogIn(props) {
 
       navigate('/dashboard');
     } catch (err) {
-      if (err.message.includes('auth/invalid-credential')) {
+      if (err.message.includes('auth/invalid-credential') || err.message.includes('auth/user-not-found')) {
         setSnackbarMsg('Invalid credential. Please try again.');
       } else {
-        setSnackbarMsg(err.message);
+        setSnackbarMsg('There is something wrong logging in. Please try again.');
       }
 
       setIsSnackbarShow(true);
@@ -157,7 +157,7 @@ export default function LogIn(props) {
             variant="h4"
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign in
+            Log in
           </Typography>
           <Box
             component="form"
