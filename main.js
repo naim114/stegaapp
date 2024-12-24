@@ -48,11 +48,11 @@ app.whenReady().then(() => {
             return;
         }
 
-        const allowedOrigin = 'http://127.0.0.1:3000';
+        // const allowedOrigin = 'http://127.0.0.1:3000';
         callback({
             responseHeaders: {
                 ...details.responseHeaders,
-                'Access-Control-Allow-Origin': [allowedOrigin],
+                // 'Access-Control-Allow-Origin': ['*'],
                 'Access-Control-Allow-Methods': ['GET, POST, PUT, DELETE, OPTIONS'],
                 'Access-Control-Allow-Headers': ['Content-Type, Authorization'],
             },

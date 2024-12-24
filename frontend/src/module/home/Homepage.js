@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Slider from 'react-slick';
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -15,46 +13,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { format } from 'date-fns';
 
+// News API Configuration
+const NEWS_API_URL = 'https://newsapi.org/v2/everything';
+const API_KEY = '4d23b5f4e6f142d6a097668d458de48d';
+const CATEGORIES = ['cybersecurity'];
 
-const cardData = [
-  {
-    img: 'https://picsum.photos/800/450?random=1',
-    tag: 'Engineering',
-    title: 'Revolutionizing software development with cutting-edge tools',
-    description:
-      'Our latest engineering tools are designed to streamline workflows and boost productivity. Discover how these innovations are transforming the software development landscape.',
-    authors: [
-      { name: 'Remy Sharp', avatar: '/static/images/avatar/1.jpg' },
-      { name: 'Travis Howard', avatar: '/static/images/avatar/2.jpg' },
-    ],
-  },
-  {
-    img: 'https://picsum.photos/800/450?random=2',
-    tag: 'Product',
-    title: 'Innovative product features that drive success',
-    description:
-      'Explore the key features of our latest product release that are helping businesses achieve their goals. From user-friendly interfaces to robust functionality, learn why our product stands out.',
-    authors: [{ name: 'Erica Johns', avatar: '/static/images/avatar/6.jpg' }],
-  },
-  {
-    img: 'https://picsum.photos/800/450?random=3',
-    tag: 'Design',
-    title: 'Designing for the future: trends and insights',
-    description:
-      'Stay ahead of the curve with the latest design trends and insights. Our design team shares their expertise on creating intuitive and visually stunning user experiences.',
-    authors: [{ name: 'Kate Morrison', avatar: '/static/images/avatar/7.jpg' }],
-  },
-  {
-    img: 'https://picsum.photos/800/450?random=4',
-    tag: 'Company',
-    title: "Our company's journey: milestones and achievements",
-    description:
-      "Take a look at our company's journey and the milestones we've achieved along the way. From humble beginnings to industry leader, discover our story of growth and success.",
-    authors: [{ name: 'Cindy Baker', avatar: '/static/images/avatar/3.jpg' }],
-  },
-];
-
+// Styled Components
 const StyledSlider = styled(Slider)(({ theme }) => ({
   '.slick-dots li button:before': {
     color: theme.palette.mode === 'dark' ? '#fff' : '#000',
@@ -78,7 +44,6 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
   },
 }));
 
-// Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -93,7 +58,7 @@ const StyledCardContent = styled(CardContent)({
   flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
-  height: '80px',
+  height: '100px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
 });
@@ -102,7 +67,7 @@ const StyledCardContent2 = styled(CardContent)({
   flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
-  height: '120px',
+  // height: '120px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
 });
@@ -115,135 +80,48 @@ const StyledTypography = styled(Typography)({
   textOverflow: 'ellipsis',
 });
 
-// Components
-function Author({ authors }) {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 2,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px',
-      }}
-    >
-      <Box
-        sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}
-      >
-        <AvatarGroup max={3}>
-          {authors.map((author, index) => (
-            <Avatar
-              key={index}
-              alt={author.name}
-              src={author.avatar}
-              sx={{ width: 24, height: 24 }}
-            />
-          ))}
-        </AvatarGroup>
-        <Typography variant="caption">
-          {authors.map((author) => author.name).join(', ')}
-        </Typography>
-      </Box>
-      <Typography variant="caption">July 14, 2021</Typography>
-    </Box>
-  );
-}
-
-Author.propTypes = {
-  authors: PropTypes.arrayOf(
-    PropTypes.shape({
-      avatar: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-};
-
-function SmallerCard({ data }) {
-  return (
-    <StyledCard>
-      <CardMedia
-        component="img"
-        image={data.img}
-        alt={data.tag}
-        sx={{ aspectRatio: '16/9', borderBottom: '1px solid', borderColor: 'divider' }}
-      />
-      <StyledCardContent>
-        <Typography variant="caption">{data.tag}</Typography>
-        <Typography variant="body2" color="textSecondary">
-          {data.title}
-        </Typography>
-      </StyledCardContent>
-    </StyledCard>
-  );
-}
-
-SmallerCard.propTypes = {
-  data: PropTypes.shape({
-    img: PropTypes.string.isRequired,
-    tag: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-// Styled Components
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '.MuiPaper-root': {
-    width: '100%',
-    height: '100%',
-    margin: 0,
-    borderRadius: 0,
-    backgroundColor: theme.palette.background.default,
-    overflowY: 'auto',
-  },
-}));
-
-const ArticleModalContent = ({ data, onClose }) => (
-  <Box sx={{ padding: 4 }}>
-    <IconButton
-      onClick={onClose}
-      sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
-    >
-      <CloseIcon />
-    </IconButton>
-    <CardMedia
-      component="img"
-      image={data.img}
-      alt={data.tag}
-      sx={{ width: '100%', maxHeight: 300, objectFit: 'cover', marginBottom: 2 }}
-    />
-    <Typography variant="h4" gutterBottom>
-      {data.title}
-    </Typography>
-    <Typography variant="caption" color="textSecondary" gutterBottom>
-      {data.tag}
-    </Typography>
-    <Typography variant="body1" paragraph>
-      {data.description}
-    </Typography>
-    <Box mt={2}>
-      <Author authors={data.authors} />
-    </Box>
-  </Box>
-);
-
-ArticleModalContent.propTypes = {
-  data: PropTypes.shape({
-    img: PropTypes.string.isRequired,
-    tag: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    authors: PropTypes.array.isRequired,
-  }).isRequired,
-  onClose: PropTypes.func.isRequired,
-};
-
-// Components
 function Home() {
+  const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
 
-  const handleCardClick = (card) => {
-    setSelectedArticle(card);
+  const fetchArticles = async () => {
+    try {
+      const requests = CATEGORIES.map(category =>
+        axios.get(NEWS_API_URL, {
+          params: {
+            apiKey: API_KEY,
+            q: category, // Use category as the search query
+            language: 'en', // Optional: Fetch articles in English
+          },
+        })
+      );
+
+      // Execute all requests concurrently
+      const responses = await Promise.all(requests);
+
+      // Combine articles from all responses
+      const allArticles = responses.flatMap(response => response.data.articles);
+
+      // Filter out unwanted sources
+      const filteredArticles = allArticles.filter(
+        article => !['Removed'].includes(article.title)
+      );
+
+      setArticles(filteredArticles);
+
+      setArticles(allArticles);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+    }
+  };
+
+  // Fetch articles on component mount
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const handleCardClick = (article) => {
+    setSelectedArticle(article);
   };
 
   const handleCloseModal = () => {
@@ -271,19 +149,23 @@ function Home() {
       </Typography>
       <Box>
         <StyledSlider {...sliderSettings}>
-          {cardData.map((card, index) => (
+          {articles.slice(0, 5).map((article, index) => (
             <Box key={index} sx={{ padding: 1 }}>
-              <StyledCard onClick={() => handleCardClick(card)}>
+              <StyledCard onClick={() => handleCardClick(article)}>
                 <CardMedia
                   component="img"
-                  image={card.img}
-                  alt={card.tag}
-                  sx={{ aspectRatio: '16/9', borderBottom: '1px solid', borderColor: 'divider' }}
+                  image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                  alt={article.source.name}
+                  sx={{
+                    aspectRatio: '16/9',
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                  }}
                 />
                 <StyledCardContent>
-                  <Typography variant="caption">{card.tag}</Typography>
+                  <Typography variant="caption">{article.source.name}</Typography>
                   <Typography variant="body2" color="textSecondary">
-                    {card.title}
+                    {article.title}
                   </Typography>
                 </StyledCardContent>
               </StyledCard>
@@ -295,33 +177,93 @@ function Home() {
         More Articles
       </Typography>
       <Grid container spacing={4}>
-        {cardData.slice(0, 5).map((card, index) => (
+        {articles.map((article, index) => (
           <Grid item xs={12} md={6} key={index}>
-            <StyledCard onClick={() => handleCardClick(card)}>
+            <StyledCard onClick={() => handleCardClick(article)}>
               <CardMedia
                 component="img"
-                image={card.img}
-                alt={card.tag}
-                sx={{ aspectRatio: '16/9', borderBottom: '1px solid', borderColor: 'divider' }}
+                image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                alt={article.source.name}
+                sx={{
+                  aspectRatio: '16/9',
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                }}
               />
               <StyledCardContent2>
-                <Typography variant="caption">{card.tag}</Typography>
-                <Typography variant="h6">{card.title}</Typography>
+                <Typography variant="caption">{article.source.name}</Typography>
+                <Typography variant="h6">{article.title}</Typography>
                 <StyledTypography variant="body2" color="textSecondary">
-                  {card.description}
+                  {article.description}
                 </StyledTypography>
               </StyledCardContent2>
-              <Author authors={card.authors} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 2,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box
+                  sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}
+                >
+                  <Typography variant="caption">
+                    {article.author}
+                  </Typography>
+                </Box>
+                <Typography variant="caption">
+                  {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                </Typography>
+              </Box>
             </StyledCard>
           </Grid>
         ))}
       </Grid>
-      <StyledDialog open={!!selectedArticle} onClose={handleCloseModal} fullScreen>
+      <Dialog open={!!selectedArticle} onClose={handleCloseModal} fullScreen>
         {selectedArticle && (
-          <ArticleModalContent data={selectedArticle} onClose={handleCloseModal} />
+          <Box sx={{ padding: 4 }}>
+            <IconButton
+              onClick={handleCloseModal}
+              sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <CardMedia
+              component="img"
+              image={selectedArticle.urlToImage || 'https://via.placeholder.com/1200x800'}
+              alt={selectedArticle.source.name}
+              sx={{ width: '100%', maxHeight: 500, objectFit: 'cover', marginBottom: 2 }}
+            />
+            <Typography variant="h5" color="textSecondary" gutterBottom>
+              {selectedArticle.source.name}
+            </Typography>
+            <Typography variant="h4" gutterBottom>
+              {selectedArticle.title}
+            </Typography>
+            <Typography variant="h6">
+              By {selectedArticle.author}
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ fontStyle: 'italic' }}>
+              {format(new Date(selectedArticle.publishedAt), 'MMMM d, yyyy')}
+            </Typography>
+            <Typography variant="body1">
+              {selectedArticle.description}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              {selectedArticle.content}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }} color="textSecondary">
+              Read the full article at{' '}
+              <a href={selectedArticle.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>
+                {selectedArticle.url}
+              </a>
+            </Typography>
+          </Box>
         )}
-      </StyledDialog>
-    </Box>
+      </Dialog>
+    </Box >
   );
 }
 
