@@ -10,7 +10,7 @@ import Snackbar from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import MuiCard from '@mui/material/Card';
 import Link from '@mui/material/Link';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
@@ -64,8 +64,6 @@ export default function ForgotPassword(props) {
   const [isSnackbarShow, setIsSnackbarShow] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();

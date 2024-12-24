@@ -14,12 +14,14 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { getCurrentUser } from '../services/auth';
+import SecurityIcon from '@mui/icons-material/Security';
 
 const mainListItems = [
   { name: 'home', text: 'Home', icon: <HomeRoundedIcon /> },
   { name: 'steganalysis', text: 'Steganalysis', icon: <BiotechIcon /> },
   { name: 'reporting', text: 'Reporting', icon: <AnalyticsRoundedIcon /> },
   { name: 'profile', text: 'Profile', icon: <AccountCircleIcon /> },
+  { name: 'security', text: 'Security', icon: <SecurityIcon /> },
   { name: 'activity', text: 'Activity Log', icon: <AssignmentIcon /> },
   { name: 'admin', text: 'Admin', icon: <AdminPanelSettingsIcon /> },
 ];

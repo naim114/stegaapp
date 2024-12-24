@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography } from '@mui/material';
+import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography, Snackbar } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
 import { getCurrentUser } from '../../services/auth';
 import { updateUser, uploadAvatar } from '../../model/user';
-import { toast } from 'react-toastify';
 
 const ProfilePage = () => {
     const [name, setName] = useState('');
@@ -11,6 +10,8 @@ const ProfilePage = () => {
     const [avatar, setAvatar] = useState('');
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState('');
+    const [snackbarMsg, setSnackbarMsg] = useState('');
+    const [isSnackbarShow, setIsSnackbarShow] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -20,11 +21,11 @@ const ProfilePage = () => {
                 setUserId(user?.uid || '');
                 setName(user?.name || '');
                 setEmail(user?.email || '');
-                console.log("avatar: " + user?.photoURL);
-
                 setAvatar(user?.photoURL || '/static/images/avatar/default.jpg');
             } catch (error) {
                 console.error('Error fetching user:', error.message);
+                setSnackbarMsg('Failed to fetch user details.');
+                setIsSnackbarShow(true);
             } finally {
                 setLoading(false);
             }
@@ -48,10 +49,12 @@ const ProfilePage = () => {
                 setLoading(true);
                 const newAvatarURL = await uploadAvatar(userId, file); // Upload avatar
                 setAvatar(newAvatarURL); // Update state with new avatar URL
-                toast('Profile picture updated successfully!');
+                setSnackbarMsg('Profile picture updated successfully!');
+                setIsSnackbarShow(true);
             } catch (error) {
                 console.error('Error updating profile picture:', error.message);
-                toast('Failed to update profile picture. Please try again.');
+                setSnackbarMsg('Failed to update profile picture. Please try again.');
+                setIsSnackbarShow(true);
             } finally {
                 setLoading(false);
             }
@@ -63,10 +66,12 @@ const ProfilePage = () => {
             setLoading(true);
             const updatedData = { name, email };
             await updateUser(userId, updatedData);
-            toast('Profile updated successfully!');
+            setSnackbarMsg('Profile updated successfully!');
+            setIsSnackbarShow(true);
         } catch (error) {
             console.error('Error updating profile:', error.message);
-            toast('Failed to update profile. Please try again.');
+            setSnackbarMsg('Failed to update profile. Please try again.');
+            setIsSnackbarShow(true);
         } finally {
             setLoading(false);
         }
@@ -144,6 +149,13 @@ const ProfilePage = () => {
             >
                 Update Profile
             </Button>
+
+            <Snackbar
+                open={isSnackbarShow}
+                autoHideDuration={6000}
+                onClose={() => setIsSnackbarShow(false)}
+                message={snackbarMsg}
+            />
         </Box>
     );
 };

@@ -1,5 +1,14 @@
 import { auth, db } from '../firebase';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import {
+    getAuth,
+    updateEmail,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    sendEmailVerification,
+    reauthenticateWithCredential,
+    EmailAuthProvider,
+} from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { addLog } from '../model/log';
 import { User } from '../model/user';
@@ -92,7 +101,6 @@ export const logout = async () => {
     }
 };
 
-
 export const getCurrentUser = async () => {
     try {
         // Check if a user is authenticated
@@ -131,6 +139,64 @@ export const forgotPassword = async (email) => {
     } catch (error) {
         console.error('Error sending password reset email:', error);
         addLog(email, `ERROR: ${error.code} - ${error.message}`);
+        throw error;
+    }
+};
+
+export const updateEmailAddress = async (newEmail, password) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('No user is currently signed in.');
+        }
+
+        // Reauthenticate the user using their current password
+        const credential = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, credential);
+
+        // Update email in Firebase Authentication
+        await updateEmail(user, newEmail);
+
+        // Update email in Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        await setDoc(userDocRef, { email: newEmail }, { merge: true });
+
+        console.log('Email address updated successfully.');
+        addLog(newEmail, `Email address updated to ${newEmail}.`);
+        return true;
+    } catch (error) {
+        console.error('Error updating email address:', error.message);
+        addLog(newEmail, `ERROR: ${error.code} - ${error.message}`);
+        throw error;
+    }
+};
+
+export const resendVerificationEmail = async (email) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('No user is currently signed in.');
+        }
+
+        await sendEmailVerification(user);
+
+        console.log('Verification email sent successfully.');
+        addLog(user.email, `Verification email resent.`);
+    } catch (error) {
+        console.error('Error resending verification email:', error.message);
+        addLog(email, `ERROR: ${error.code} - ${error.message}`);
+        throw error;
+    }
+};
+
+// Update user's email
+export const updateUser = async (userId, data) => {
+    try {
+        const userDocRef = doc(db, 'users', userId);
+        await setDoc(userDocRef, data, { merge: true });
+        addLog(userId, `User data updated: ${JSON.stringify(data)}`);
+    } catch (error) {
+        console.error('Error updating user data:', error.message);
         throw error;
     }
 };

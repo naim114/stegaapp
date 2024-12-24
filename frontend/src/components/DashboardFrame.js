@@ -4,7 +4,7 @@ import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import AppTheme from '../shared-theme/AppTheme';
@@ -28,6 +28,8 @@ import ActivityBreadcrumb from '../module/activity/ActivityLogBreadcrumb';
 import Profile from '../module/profile/Profile';
 import ProfileBreadcrumb from '../module/profile/ProfileBreadcrumb';
 import { getCurrentUser } from '../services/auth';
+import SecurityPage from '../module/security/Security';
+import SecurityBreadcrumb from '../module/security/SecurityBreadcrumb';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -56,6 +58,11 @@ const pages = [
         name: 'profile',
         screen: <Profile />,
         breadcrumb: <ProfileBreadcrumb />,
+    },
+    {
+        name: 'security',
+        screen: <SecurityPage />,
+        breadcrumb: <SecurityBreadcrumb />,
     },
     {
         name: 'activity',
