@@ -3,6 +3,7 @@ import { Box, Avatar, Stack, TextField, Button, CircularProgress, Typography, Sn
 import { CameraAlt } from '@mui/icons-material';
 import { getCurrentUser } from '../../services/auth';
 import { updateUser, uploadAvatar } from '../../model/user';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
     const [name, setName] = useState('');
@@ -12,6 +13,8 @@ const ProfilePage = () => {
     const [userId, setUserId] = useState('');
     const [snackbarMsg, setSnackbarMsg] = useState('');
     const [isSnackbarShow, setIsSnackbarShow] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -51,6 +54,8 @@ const ProfilePage = () => {
                 setAvatar(newAvatarURL); // Update state with new avatar URL
                 setSnackbarMsg('Profile picture updated successfully!');
                 setIsSnackbarShow(true);
+
+                navigate('/');
             } catch (error) {
                 console.error('Error updating profile picture:', error.message);
                 setSnackbarMsg('Failed to update profile picture. Please try again.');
@@ -68,6 +73,10 @@ const ProfilePage = () => {
             await updateUser(userId, updatedData);
             setSnackbarMsg('Profile updated successfully!');
             setIsSnackbarShow(true);
+
+
+            navigate('/');
+
         } catch (error) {
             console.error('Error updating profile:', error.message);
             setSnackbarMsg('Failed to update profile. Please try again.');

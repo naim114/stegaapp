@@ -63,6 +63,8 @@ const SecurityPage = () => {
             setNewEmail('');
             setSnackbarMsg('Email address updated successfully! Please log out and login again with new email.');
             setIsSnackbarShow(true);
+
+            navigate('/');
         } catch (error) {
             if (error.message.includes('wrong-password')) {
                 setSnackbarMsg('Wrong password. Please try again.');
