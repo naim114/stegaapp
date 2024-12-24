@@ -17,7 +17,6 @@ import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { signIn, getCurrentUser } from '../../services/auth';
 import { CircularProgress, Snackbar } from '@mui/material';
-import { toast } from 'react-toastify';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -103,7 +102,6 @@ export default function LogIn(props) {
       console.log('User signed in successfully!', user);
 
       setSnackbarMsg('Signed in successfully. Welcome!');
-      toast('Signed in successfully. Welcome!');
       setIsSnackbarShow(true);
 
       navigate('/dashboard');

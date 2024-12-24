@@ -16,7 +16,6 @@ import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signUp, getCurrentUser } from '../../services/auth';
 import { Snackbar, CircularProgress } from '@mui/material';
-import { toast } from 'react-toastify';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -71,14 +70,12 @@ export default function SignUp(props) {
     const [snackbarMsg, setSnackbarMsg] = React.useState('');
     const [loading, setLoading] = React.useState(false);
 
-    // Form state for the input fields
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
     const navigate = useNavigate();
 
-    // Check for an authenticated user
     React.useEffect(() => {
         const checkUser = async () => {
             try {
@@ -138,16 +135,14 @@ export default function SignUp(props) {
             return;
         }
 
-        setLoading(true); // Start loading
+        setLoading(true);
 
         try {
             await signUp(email, password, name);
             console.log('User signed up successfully!');
             setSnackbarMsg("Sign up success! Please login first to continue.");
-            toast('Sign up success! Please login first to continue.');
             setIsSnackbarShow(true);
 
-            // Reset form fields after successful sign-up
             setName('');
             setEmail('');
             setPassword('');
@@ -162,10 +157,9 @@ export default function SignUp(props) {
                 setSnackbarMsg(err.message);
             }
 
-            toast(err.message);
             setIsSnackbarShow(true);
         } finally {
-            setLoading(false); // Stop loading once operation is complete
+            setLoading(false);
         }
     };
 
@@ -201,7 +195,7 @@ export default function SignUp(props) {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
-                                disabled={loading} // Disable while loading
+                                disabled={loading}
                             />
                         </FormControl>
                         <FormControl>
@@ -219,7 +213,7 @@ export default function SignUp(props) {
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
-                                disabled={loading} // Disable while loading
+                                disabled={loading}
                             />
                         </FormControl>
                         <FormControl>
@@ -238,16 +232,16 @@ export default function SignUp(props) {
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
-                                disabled={loading} // Disable while loading
+                                disabled={loading}
                             />
                         </FormControl>
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            disabled={loading} // Disable button while loading
+                            disabled={loading}
                         >
-                            {loading ? <CircularProgress size={24} /> : 'Sign up'} {/* Show spinner */}
+                            {loading ? <CircularProgress size={24} /> : 'Sign up'}
                         </Button>
                     </Box>
                     <Divider>

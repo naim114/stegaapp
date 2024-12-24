@@ -39,6 +39,12 @@ const SecurityPage = () => {
 
     const handleEmailChange = async () => {
         try {
+            if (!newEmail || !password) {
+                setSnackbarMsg('Please enter all required fields.');
+                setIsSnackbarShow(true);
+                return;
+            }
+
             if (!newEmail) {
                 setSnackbarMsg('Please enter a new email address.');
                 setIsSnackbarShow(true);
@@ -55,7 +61,7 @@ const SecurityPage = () => {
             await updateEmailAddress(newEmail, password);
             setEmail(newEmail);
             setNewEmail('');
-            setSnackbarMsg('Email address updated successfully! Please log out and login again');
+            setSnackbarMsg('Email address updated successfully! Please log out and login again with new email.');
             setIsSnackbarShow(true);
         } catch (error) {
             if (error.message.includes('wrong-password')) {
@@ -158,7 +164,6 @@ const SecurityPage = () => {
                     variant="contained"
                     color="primary"
                     onClick={handleEmailChange}
-                    disabled={!newEmail || !password}
                 >
                     Update Email Address
                 </Button>
