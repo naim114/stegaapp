@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Slider from 'react-slick';
 import Avatar from '@mui/material/Avatar';
@@ -9,9 +9,13 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
 
 const cardData = [
   {
@@ -182,7 +186,70 @@ SmallerCard.propTypes = {
   }).isRequired,
 };
 
-export default function Home() {
+// Styled Components
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '.MuiPaper-root': {
+    width: '100%',
+    height: '100%',
+    margin: 0,
+    borderRadius: 0,
+    backgroundColor: theme.palette.background.default,
+    overflowY: 'auto',
+  },
+}));
+
+const ArticleModalContent = ({ data, onClose }) => (
+  <Box sx={{ padding: 4 }}>
+    <IconButton
+      onClick={onClose}
+      sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
+    >
+      <CloseIcon />
+    </IconButton>
+    <CardMedia
+      component="img"
+      image={data.img}
+      alt={data.tag}
+      sx={{ width: '100%', maxHeight: 300, objectFit: 'cover', marginBottom: 2 }}
+    />
+    <Typography variant="h4" gutterBottom>
+      {data.title}
+    </Typography>
+    <Typography variant="caption" color="textSecondary" gutterBottom>
+      {data.tag}
+    </Typography>
+    <Typography variant="body1" paragraph>
+      {data.description}
+    </Typography>
+    <Box mt={2}>
+      <Author authors={data.authors} />
+    </Box>
+  </Box>
+);
+
+ArticleModalContent.propTypes = {
+  data: PropTypes.shape({
+    img: PropTypes.string.isRequired,
+    tag: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    authors: PropTypes.array.isRequired,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+// Components
+function Home() {
+  const [selectedArticle, setSelectedArticle] = useState(null);
+
+  const handleCardClick = (card) => {
+    setSelectedArticle(card);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedArticle(null);
+  };
+
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -206,7 +273,20 @@ export default function Home() {
         <StyledSlider {...sliderSettings}>
           {cardData.map((card, index) => (
             <Box key={index} sx={{ padding: 1 }}>
-              <SmallerCard data={card} />
+              <StyledCard onClick={() => handleCardClick(card)}>
+                <CardMedia
+                  component="img"
+                  image={card.img}
+                  alt={card.tag}
+                  sx={{ aspectRatio: '16/9', borderBottom: '1px solid', borderColor: 'divider' }}
+                />
+                <StyledCardContent>
+                  <Typography variant="caption">{card.tag}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {card.title}
+                  </Typography>
+                </StyledCardContent>
+              </StyledCard>
             </Box>
           ))}
         </StyledSlider>
@@ -215,9 +295,9 @@ export default function Home() {
         More Articles
       </Typography>
       <Grid container spacing={4}>
-        {cardData.slice(0, 2).map((card, index) => (
+        {cardData.slice(0, 5).map((card, index) => (
           <Grid item xs={12} md={6} key={index}>
-            <StyledCard>
+            <StyledCard onClick={() => handleCardClick(card)}>
               <CardMedia
                 component="img"
                 image={card.img}
@@ -236,6 +316,13 @@ export default function Home() {
           </Grid>
         ))}
       </Grid>
+      <StyledDialog open={!!selectedArticle} onClose={handleCloseModal} fullScreen>
+        {selectedArticle && (
+          <ArticleModalContent data={selectedArticle} onClose={handleCloseModal} />
+        )}
+      </StyledDialog>
     </Box>
   );
 }
+
+export default Home;
