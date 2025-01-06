@@ -98,6 +98,15 @@ export default function Report() {
 
     const generatePDF = () => {
         const doc = new jsPDF();
+
+        // Get the current date
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+
         const tableColumn = ['Prediction', 'Confidence (%)', 'Date'];
         const tableRows = rows.map((row) => [
             row.prediction,
@@ -105,7 +114,10 @@ export default function Report() {
             row.date,
         ]);
 
-        doc.text('Scan History Report', 14, 15);
+        doc.text('Scan History Report', 14, 10);
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${formattedDate}`, 14, 16);
+
         doc.autoTable({
             head: [tableColumn],
             body: tableRows,

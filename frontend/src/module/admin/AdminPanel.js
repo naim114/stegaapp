@@ -217,19 +217,47 @@ export default function AdminPanel() {
     // Generate PDF for User List
     const downloadUserListPDF = () => {
         const doc = new jsPDF();
+
+        // Get the current date
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+
+        // Add title and date to the PDF
         doc.text('User List', 14, 10);
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${formattedDate}`, 14, 16);
+
+        // Add the table
         doc.autoTable({
             head: [['Name', 'Email', 'Scans']],
             body: userRows.map((row) => [row.name, row.email, row.scansPerUser]),
             startY: 20,
         });
+
+        // Save the PDF
         doc.save('user_list.pdf');
     };
 
     // Generate PDF for Activity Log
     const downloadActivityLogPDF = () => {
         const doc = new jsPDF();
+
+        // Get the current date
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+
         doc.text('Activity Log', 14, 10);
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${formattedDate}`, 14, 16);
+
         doc.autoTable({
             head: [['Activity', 'Date']],
             body: activityLogRows.map((row) => [row.activity, row.date]),
