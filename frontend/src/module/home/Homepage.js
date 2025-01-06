@@ -94,8 +94,8 @@ function Home() {
         axios.get(NEWS_API_URL, {
           params: {
             apiKey: API_KEY,
-            q: category, // Use category as the search query
-            language: 'en', // Optional: Fetch articles in English
+            q: category,
+            language: 'en',
           },
         })
       );
@@ -106,9 +106,13 @@ function Home() {
       // Combine articles from all responses
       const allArticles = responses.flatMap(response => response.data.articles);
 
-      // Filter out unwanted sources
-      const filteredArticles = allArticles.filter(
-        article => !['Removed'].includes(article.title)
+      // Filter out articles with `[Removed]` attributes
+      const filteredArticles = allArticles.filter(article =>
+        article.title !== '[Removed]' &&
+        article.description !== '[Removed]' &&
+        article.content !== '[Removed]' &&
+        article.author !== '[Removed]' &&
+        article.urlToImage !== '[Removed]'
       );
 
       setArticles(filteredArticles);
@@ -118,6 +122,7 @@ function Home() {
       setLoading(false); // Stop loading
     }
   };
+
 
   // Fetch articles on component mount
   useEffect(() => {
