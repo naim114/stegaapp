@@ -10,11 +10,14 @@ import { getAllLogs, getLogsByUserEmail } from '../../model/log';
 import { getAllUsers } from '../../model/user';
 import { getScanResultsByUser } from '../../model/scan';
 import { Button } from '@mui/material';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Avatar from '@mui/material/Avatar';
 import UserDetailModal from './UserDetailModal';
 import UserLogModal from './UserLoglModal';
 import ScanHistoryModal from './ScanHistoryModal'; // New modal for scan history
 import ActivityBarChart from '../../components/ActivityBarChart';
+
 
 export default function AdminPanel() {
     const [userRows, setUserRows] = useState([]);
@@ -211,6 +214,30 @@ export default function AdminPanel() {
         fetchLogs();
     }, []);
 
+    // Generate PDF for User List
+    const downloadUserListPDF = () => {
+        const doc = new jsPDF();
+        doc.text('User List', 14, 10);
+        doc.autoTable({
+            head: [['Name', 'Email', 'Scans']],
+            body: userRows.map((row) => [row.name, row.email, row.scansPerUser]),
+            startY: 20,
+        });
+        doc.save('user_list.pdf');
+    };
+
+    // Generate PDF for Activity Log
+    const downloadActivityLogPDF = () => {
+        const doc = new jsPDF();
+        doc.text('Activity Log', 14, 10);
+        doc.autoTable({
+            head: [['Activity', 'Date']],
+            body: activityLogRows.map((row) => [row.activity, row.date]),
+            startY: 20,
+        });
+        doc.save('activity_log.pdf');
+    };
+
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
             <Typography component="h4" variant="h4" sx={{ mb: 2 }}>
@@ -232,6 +259,14 @@ export default function AdminPanel() {
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
                 User List
             </Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ mb: 2 }}
+                onClick={downloadUserListPDF}
+            >
+                Download User List as PDF
+            </Button>
             <Grid container spacing={2} columns={6}>
                 <Grid size={{ xs: 12, lg: 9 }}>
                     {isUserLoading ? (
@@ -243,9 +278,19 @@ export default function AdminPanel() {
                     )}
                 </Grid>
             </Grid>
+
+            {/* Activity Log Section */}
             <Typography component="h2" variant="h6" sx={{ mt: 2, mb: 2 }}>
                 Activity Log
             </Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ mb: 2 }}
+                onClick={downloadActivityLogPDF}
+            >
+                Download Activity Log as PDF
+            </Button>
             <Grid container spacing={2} columns={6}>
                 <Grid size={{ xs: 12, lg: 9 }}>
                     {isActivityLogLoading ? (
