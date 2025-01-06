@@ -7,6 +7,8 @@ import CustomizedDataGrid from '../../components/CustomizedDataGrid';
 import { getCurrentUser } from '../../services/auth';
 import { getScanResultsByUser } from '../../model/scan';
 import Modal from '@mui/material/Modal';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const style = {
     position: 'absolute',
@@ -21,9 +23,9 @@ const style = {
 };
 
 const columns = [
-    { field: 'prediction', headerName: 'Prediction', flex: 1, },
-    { field: 'confidence', headerName: 'Confidence (%)', flex: 1, },
-    { field: 'date', headerName: 'Date', flex: 1, },
+    { field: 'prediction', headerName: 'Prediction', flex: 1 },
+    { field: 'confidence', headerName: 'Confidence (%)', flex: 1 },
+    { field: 'date', headerName: 'Date', flex: 1 },
     {
         field: 'actions',
         headerName: 'Actions',
@@ -94,6 +96,24 @@ export default function Report() {
         setSelectedResult(null);
     };
 
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        const tableColumn = ['Prediction', 'Confidence (%)', 'Date'];
+        const tableRows = rows.map((row) => [
+            row.prediction,
+            row.confidence,
+            row.date,
+        ]);
+
+        doc.text('Scan History Report', 14, 15);
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+        doc.save(userEmail + '-scan-history.pdf');
+    };
+
     return (
         <Box sx={{ width: '100%' }}>
             <Typography component="h4" variant="h4" sx={{ mb: 1 }}>
@@ -112,7 +132,17 @@ export default function Report() {
                     <CircularProgress />
                 </Box>
             ) : (
-                <CustomizedDataGrid columns={columns} rows={rows} />
+                <>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={generatePDF}
+                        sx={{ mb: 2 }}
+                    >
+                        Download PDF
+                    </Button>
+                    <CustomizedDataGrid columns={columns} rows={rows} />
+                </>
             )}
 
             <Modal open={modalOpen} onClose={handleClose}>
@@ -132,7 +162,9 @@ export default function Report() {
                     {selectedResult && (
                         <>
                             <Typography variant="h6">Scan Details</Typography>
-                            <Typography>Date: {new Date(selectedResult.date).toLocaleString()}</Typography>
+                            <Typography>
+                                Date: {new Date(selectedResult.date).toLocaleString()}
+                            </Typography>
                             <Typography>Prediction: {selectedResult.prediction}</Typography>
                             <Typography>Confidence: {selectedResult.confidence}</Typography>
                             <img
