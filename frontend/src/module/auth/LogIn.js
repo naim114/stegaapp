@@ -164,8 +164,8 @@ export default function LogIn(props) {
               alt="DeStegAi"
               sx={{
                 display: 'block',
-                maxWidth: '100px',
-                maxHeight: '100px',
+                maxWidth: '80px',
+                maxHeight: '80px',
               }}
             />
             <Typography variant="h6" align="center">
