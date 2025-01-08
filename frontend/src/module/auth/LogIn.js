@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
@@ -17,6 +15,7 @@ import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../../shared-theme/ColorModeSelect';
 import { signIn, getCurrentUser } from '../../services/auth';
 import { CircularProgress, Snackbar } from '@mui/material';
+import Logo from '../../assets/logo-nobg.png';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -152,6 +151,28 @@ export default function LogIn(props) {
       <LogInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Box
+              component="img"
+              src={Logo}
+              alt="DeStegAi"
+              sx={{
+                display: 'block',
+                maxWidth: '100px',
+                maxHeight: '100px',
+              }}
+            />
+            <Typography variant="h6" align="center">
+              DeStegAi
+            </Typography>
+          </Box>
+
           <Typography
             component="h1"
             variant="h4"
@@ -205,10 +226,6 @@ export default function LogIn(props) {
                 disabled={loading}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth

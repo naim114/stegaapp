@@ -161,7 +161,7 @@ function Home() {
       {!loading && (
         <>
           <Typography component="h2" variant="h4" sx={{ mb: 1 }}>
-            Welcome to StegoApp
+            Welcome to DeStegAi
           </Typography>
           <Box>
             <StyledSlider {...sliderSettings}>

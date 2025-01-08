@@ -11,6 +11,7 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SideMenuMobile from './SideMenuMobile';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown';
+import Logo from '../assets/logo-nobg.png';
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
@@ -61,11 +62,23 @@ export default function AppNavbar({ onClick, pageName, ...props }) {
           <Stack
             direction="row"
             spacing={1}
-            sx={{ justifyContent: 'center', mr: 'auto' }}
+            sx={{ justifyContent: 'center', mr: 'auto', alignItems: 'center' }}
           >
-            {/* <CustomIcon /> */}
-            <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              stegaapp
+            <Box
+              component="img"
+              src={Logo}
+              alt="DeStegAi"
+              sx={{
+                width: '2rem',
+                height: '2rem',
+              }}
+            />
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ color: 'text.primary', whiteSpace: 'nowrap' }}
+            >
+              DeStegAi
             </Typography>
           </Stack>
           <ColorModeIconDropdown data-screenshot="" />

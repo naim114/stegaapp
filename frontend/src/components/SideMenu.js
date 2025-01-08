@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import { getCurrentUser } from '../services/auth';
+import Logo from '../assets/logo-nobg.png';
 
 const drawerWidth = 240;
 
@@ -57,8 +58,22 @@ export default function SideMenu({ pageName, ...props }) {
           justifyContent: 'center'
         }}
       >
-        <Typography component="h2" variant="h6">
-          stegoapp
+        <Box
+          component="img"
+          src={Logo}
+          alt="DeStegAi"
+          sx={{
+            width: '1.75rem',
+            height: '1.75rem',
+            mr: 1,
+          }}
+        />
+        <Typography
+          variant="h6"
+          component="h1"
+          sx={{ color: 'text.primary', whiteSpace: 'nowrap' }}
+        >
+          DeStegAi
         </Typography>
       </Box>
       <Divider />
