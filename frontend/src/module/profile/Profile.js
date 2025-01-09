@@ -37,12 +37,16 @@ const ProfilePage = () => {
         fetchUser();
     }, []);
 
+    const sanitizeInput = (input) => {
+        return input.replace(/[<>$;"/\\]/g, '');
+    };
+
     const handleNameChange = (event) => {
-        setName(event.target.value);
+        setName(sanitizeInput(event.target.value));
     };
 
     const handleEmailChange = (event) => {
-        setEmail(event.target.value);
+        setEmail(sanitizeInput(event.target.value));
     };
 
     const handleAvatarChange = async (event) => {
@@ -74,9 +78,7 @@ const ProfilePage = () => {
             setSnackbarMsg('Profile updated successfully!');
             setIsSnackbarShow(true);
 
-
             navigate('/');
-
         } catch (error) {
             console.error('Error updating profile:', error.message);
             setSnackbarMsg('Failed to update profile. Please try again.');

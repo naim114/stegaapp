@@ -110,6 +110,10 @@ const SecurityPage = () => {
         }
     };
 
+    const sanitizeInput = (input) => {
+        return input.replace(/[<>$;"/\\]/g, '').trim();
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -149,7 +153,7 @@ const SecurityPage = () => {
                     variant="outlined"
                     type='email'
                     value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
+                    onChange={(e) => setNewEmail(sanitizeInput(e.target.value))}
                     fullWidth
                 />
                 <TextField
@@ -157,7 +161,7 @@ const SecurityPage = () => {
                     variant="outlined"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(sanitizeInput(e.target.value))}
                     fullWidth
                     sx={{ mt: 2 }}
                 />
