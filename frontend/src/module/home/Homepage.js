@@ -114,15 +114,18 @@ function Home() {
         article.author !== '[Removed]' &&
         article.urlToImage !== '[Removed]'
       );
+      // Sort articles by latest publication date
+      const sortedArticles = filteredArticles.sort((a, b) =>
+        new Date(b.publishedAt) - new Date(a.publishedAt)
+      );
 
-      setArticles(filteredArticles);
+      setArticles(sortedArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
       setLoading(false); // Stop loading
     }
   };
-
 
   // Fetch articles on component mount
   useEffect(() => {
@@ -170,7 +173,7 @@ function Home() {
                   <StyledCard onClick={() => handleCardClick(article)}>
                     <CardMedia
                       component="img"
-                      image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                      image={article.urlToImage || 'https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ='}
                       alt={article.source.name}
                       sx={{
                         aspectRatio: '16/9',
@@ -198,7 +201,7 @@ function Home() {
                 <StyledCard onClick={() => handleCardClick(article)}>
                   <CardMedia
                     component="img"
-                    image={article.urlToImage || 'https://via.placeholder.com/1200x800'}
+                    image={article.urlToImage || 'https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ='}
                     alt={article.source.name}
                     sx={{
                       aspectRatio: '16/9',
@@ -251,7 +254,7 @@ function Home() {
             </IconButton>
             <CardMedia
               component="img"
-              image={selectedArticle.urlToImage || 'https://via.placeholder.com/1200x800'}
+              image={selectedArticle.urlToImage || 'https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ='}
               alt={selectedArticle.source.name}
               sx={{ width: '100%', maxHeight: 500, objectFit: 'cover', marginBottom: 2 }}
             />

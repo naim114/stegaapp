@@ -6,12 +6,69 @@ import { getCurrentUser } from '../../services/auth';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+const malwareInfo = {
+    clean: {
+        description: "The file is clean and does not contain any malicious payloads.",
+        prevention: "No action needed.",
+        removal: "No action needed.",
+        impact: "No risk to your system or data.",
+        symptoms: "None.",
+        examples: "Not applicable.",
+        references: "Not applicable."
+    },
+    eth: {
+        description: "The file contains Ethereum-based malware, potentially targeting cryptocurrency wallets.",
+        prevention: "Avoid downloading files from untrusted sources. Use antivirus software.",
+        removal: "Use a reliable antivirus tool to remove the malware. Change wallet credentials if affected.",
+        impact: "May result in theft of cryptocurrency or compromised wallet security.",
+        symptoms: "Unexpected transactions, unauthorized access to wallet, or slow system performance.",
+        examples: "Clipboard hijacking malware that replaces copied wallet addresses.",
+        references: "https://www.cert.gov/crypto-malware-prevention"
+    },
+    html: {
+        description: "The file contains HTML-based malware, often used for phishing or injecting malicious scripts.",
+        prevention: "Enable browser security settings and avoid opening suspicious links or files.",
+        removal: "Scan your system with updated antivirus software. Remove any unauthorized browser extensions.",
+        impact: "May lead to credential theft, data leakage, or unauthorized system access.",
+        symptoms: "Unusual pop-ups, redirected browser pages, or unauthorized browser extensions.",
+        examples: "Phishing pages mimicking login screens for popular websites.",
+        references: "https://www.cybersecurity-guide.org/html-malware-guide"
+    },
+    js: {
+        description: "The file contains JavaScript malware, which can execute harmful scripts on your system.",
+        prevention: "Disable JavaScript on untrusted websites and ensure your browser is up-to-date.",
+        removal: "Run a full system scan with antivirus software. Clear browser cache and cookies.",
+        impact: "Can steal sensitive information, exploit vulnerabilities, or install additional malware.",
+        symptoms: "Unusual browser behavior, unauthorized transactions, or pop-ups.",
+        examples: "Cryptojacking scripts that mine cryptocurrency using your device's resources.",
+        references: "https://www.cybersecure.com/javascript-malware-overview"
+    },
+    ps: {
+        description: "The file contains PowerShell malware, often used for executing malicious commands.",
+        prevention: "Disable PowerShell execution for untrusted scripts. Use endpoint protection tools.",
+        removal: "Run a specialized anti-malware scan to remove malicious scripts.",
+        impact: "Allows attackers to execute commands, access sensitive data, or spread malware.",
+        symptoms: "High CPU usage, unauthorized system changes, or unexpected PowerShell windows.",
+        examples: "Fileless malware attacks leveraging PowerShell scripts.",
+        references: "https://docs.microsoft.com/en-us/powershell/security-best-practices"
+    },
+    url: {
+        description: "The file contains URL-based malware, redirecting users to malicious websites.",
+        prevention: "Avoid clicking on unknown URLs. Use web filters and security extensions.",
+        removal: "Clear browser history and scan for malware. Update your browser security settings.",
+        impact: "Can lead to phishing attacks, drive-by downloads, or ransomware infections.",
+        symptoms: "Redirected browsing, suspicious network activity, or slow system performance.",
+        examples: "Links leading to fake login pages or automatic malware downloads.",
+        references: "https://www.sans.org/url-malware-protection"
+    }
+};
+
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 600,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -105,7 +162,7 @@ export default function Steganalysis() {
             }
 
             setLoading(false);
-        }, (Math.random() * (6000 - 2000) + 2000));
+        }, (Math.random() * (5000 - 1000) + 1000));
     };
 
     const saveResult = async () => {
@@ -181,7 +238,7 @@ export default function Steganalysis() {
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '2500px' } }}>
             <Typography component="h4" variant="h4" sx={{ mb: 1 }}>
                 Steganalysis
             </Typography>
@@ -247,7 +304,16 @@ export default function Steganalysis() {
                     </Typography>
 
                     {loading ? (
-                        <CircularProgress size={24} />
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                            }}
+                        >
+                            <CircularProgress size={48} />
+                        </Box>
                     ) : (
                         <>
                             {msg && (
@@ -255,12 +321,39 @@ export default function Steganalysis() {
                                     {msg}
                                 </Typography>
                             )}
+
                             {confidence && (
                                 <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
                                     Confidence Percentage: {confidence}
                                 </Typography>
                             )}
 
+                            {result && malwareInfo[result] && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="h6">Malware Details</Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Description:</strong> {malwareInfo[result].description}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Prevention:</strong> {malwareInfo[result].prevention}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Removal:</strong> {malwareInfo[result].removal}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Impact:</strong> {malwareInfo[result].impact}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Symptoms:</strong> {malwareInfo[result].symptoms}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>Examples:</strong> {malwareInfo[result].examples}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        <strong>References:</strong> {malwareInfo[result].references}
+                                    </Typography>
+                                </Box>
+                            )}
                             <Button
                                 variant="contained"
                                 sx={{ mt: 2, mr: 1 }}
