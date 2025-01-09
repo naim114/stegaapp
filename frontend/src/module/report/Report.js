@@ -114,7 +114,7 @@ export default function Report() {
             row.date,
         ]);
 
-        doc.text('Scan History Report', 14, 10);
+        doc.text('DeStegAi Scan History Report', 14, 10);
         doc.setFontSize(10);
         doc.text(`Generated on: ${formattedDate}`, 14, 16);
 

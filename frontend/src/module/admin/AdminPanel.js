@@ -227,7 +227,7 @@ export default function AdminPanel() {
         });
 
         // Add title and date to the PDF
-        doc.text('User List', 14, 10);
+        doc.text('DeStegAi User List', 14, 10);
         doc.setFontSize(10);
         doc.text(`Generated on: ${formattedDate}`, 14, 16);
 
@@ -254,7 +254,7 @@ export default function AdminPanel() {
             day: 'numeric',
         });
 
-        doc.text('Activity Log', 14, 10);
+        doc.text('DeStegAi Activity Log', 14, 10);
         doc.setFontSize(10);
         doc.text(`Generated on: ${formattedDate}`, 14, 16);
 

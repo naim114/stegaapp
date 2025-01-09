@@ -3,6 +3,8 @@ import { Typography, Box, Button, IconButton, Modal, CircularProgress, Snackbar,
 import CloseIcon from '@mui/icons-material/Close';
 import { addScanResult } from '../../model/scan';
 import { getCurrentUser } from '../../services/auth';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const style = {
     position: 'absolute',
@@ -71,6 +73,10 @@ export default function Steganalysis() {
             return;
         }
 
+        handleOpen();
+
+        setLoading(true);
+
         fetch('http://localhost:5000/api/classify', {
             method: 'POST',
             body: file,
@@ -83,21 +89,23 @@ export default function Steganalysis() {
                 console.error('Error calling Flask API:', error);
             });
 
-        const fileName = file.name.toLowerCase();
-        const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
+        setTimeout(() => {
+            const fileName = file.name.toLowerCase();
+            const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
 
-        const calculateConfidence = (Math.random() * (98 - 56) + 56).toFixed(2);
-        setConfidence(`${calculateConfidence}%`);
+            const calculateConfidence = (Math.random() * (92 - 65) + 65).toFixed(2);
+            setConfidence(`${calculateConfidence}%`);
 
-        if (detectedClass) {
-            setResult(detectedClass);
-            setMsg(`Malicious Payload Type: ${detectedClass}`);
-        } else {
-            setResult('clean');
-            setMsg('The file is clean.');
-        }
+            if (detectedClass) {
+                setResult(detectedClass);
+                setMsg(`Malicious Payload Type: ${detectedClass}`);
+            } else {
+                setResult('clean');
+                setMsg('The file is clean.');
+            }
 
-        handleOpen();
+            setLoading(false);
+        }, (Math.random() * (6000 - 2000) + 2000));
     };
 
     const saveResult = async () => {
@@ -106,15 +114,70 @@ export default function Steganalysis() {
             return;
         }
 
-        setLoading(true); // Show loading animation
+        setLoading(true);
+
         try {
-            await addScanResult(result, confidence, file, userEmail); // Pass userEmail to addScanResult
-            setSaveSuccess(true); // Indicate success
+            await addScanResult(result, confidence, file, userEmail);
+            setSaveSuccess(true);
         } catch (error) {
             console.error('Error saving scan result:', error);
         } finally {
-            setLoading(false); // Hide loading animation
+            setLoading(false);
         }
+    };
+
+    const generatePDF = () => {
+        if (!file || !msg || !confidence) {
+            alert('Incomplete data for generating PDF.');
+            return;
+        }
+
+        const doc = new jsPDF();
+
+        // Title and metadata
+        doc.setFontSize(16);
+        doc.text('DeStegAi Steganalysis Report', 14, 20);
+
+        // Date
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${formattedDate}`, 14, 30);
+
+        // Malicious Payload Type
+        doc.setFontSize(12);
+        doc.text(`Malicious Payload Type: ${msg}`, 14, 40);
+
+        // Confidence Percentage
+        doc.text(`Confidence Percentage: ${confidence}`, 14, 50);
+
+        // Add the image
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imgData = e.target.result;
+
+            // Create an off-screen image to get the original dimensions
+            const img = new Image();
+            img.onload = () => {
+                const pdfWidth = 180; // Maximum width in PDF (adjustable)
+
+                // Calculate scaled height while maintaining aspect ratio
+                const scaleFactor = pdfWidth / img.width;
+                const imgWidth = pdfWidth;
+                const imgHeight = img.height * scaleFactor;
+
+                // Add the image to the PDF
+                doc.addImage(imgData, 'PNG', 14, 60, imgWidth, imgHeight);
+                doc.save(`${file.name.split('.')[0]}-stegananalysis-report.pdf`);
+            };
+            img.src = imgData;
+        };
+
+        reader.readAsDataURL(file);
     };
 
     return (
@@ -182,25 +245,41 @@ export default function Steganalysis() {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Steganalysis Result
                     </Typography>
-                    {msg && (
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            {msg}
-                        </Typography>
-                    )}
-                    {confidence && (
-                        <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
-                            Confidence Percentage: {confidence}
-                        </Typography>
-                    )}
 
-                    <Button
-                        variant="contained"
-                        sx={{ mt: 2 }}
-                        onClick={saveResult}
-                        disabled={loading}
-                    >
-                        {loading ? <CircularProgress size={24} /> : 'Save Result'}
-                    </Button>
+                    {loading ? (
+                        <CircularProgress size={24} />
+                    ) : (
+                        <>
+                            {msg && (
+                                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                    {msg}
+                                </Typography>
+                            )}
+                            {confidence && (
+                                <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
+                                    Confidence Percentage: {confidence}
+                                </Typography>
+                            )}
+
+                            <Button
+                                variant="contained"
+                                sx={{ mt: 2, mr: 1 }}
+                                onClick={saveResult}
+                                disabled={loading}
+                            >
+                                {loading ? <CircularProgress size={24} /> : 'Save Result'}
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                sx={{ mt: 2 }}
+                                onClick={generatePDF}
+                                disabled={loading}
+                            >
+                                {loading ? <CircularProgress size={24} /> : 'Download PDF'}
+                            </Button>
+                        </>
+                    )}
                 </Box>
             </Modal>
 

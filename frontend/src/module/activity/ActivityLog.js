@@ -54,7 +54,7 @@ export default function ActivityLog() {
         });
 
         // Add title and date to the PDF
-        doc.text('Activity Log', 14, 10);
+        doc.text('DeStegAi Activity Log', 14, 10);
         doc.setFontSize(10);
         doc.text(`Generated on: ${formattedDate}`, 14, 16);
 
