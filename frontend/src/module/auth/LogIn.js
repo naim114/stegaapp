@@ -67,6 +67,8 @@ export default function LogIn(props) {
   const [isSnackbarShow, setIsSnackbarShow] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
 
@@ -76,7 +78,7 @@ export default function LogIn(props) {
       try {
         const user = await getCurrentUser();
         if (user) {
-          console.log("current user: " + user);
+          console.log('current user: ' + user);
 
           navigate('/dashboard');
         }
@@ -145,6 +147,17 @@ export default function LogIn(props) {
     return isValid;
   };
 
+  // Handle input sanitization
+  const handleEmailChange = (event) => {
+    const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+    setEmail(sanitizedValue);
+  };
+
+  const handlePasswordChange = (event) => {
+    const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+    setPassword(sanitizedValue);
+  };
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -199,6 +212,8 @@ export default function LogIn(props) {
                 id="email"
                 type="email"
                 name="email"
+                value={email}
+                onChange={handleEmailChange} // Handle sanitization here
                 placeholder="your@email.com"
                 autoComplete="email"
                 autoFocus
@@ -218,6 +233,8 @@ export default function LogIn(props) {
                 placeholder="••••••"
                 type="password"
                 id="password"
+                value={password}
+                onChange={handlePasswordChange} // Handle sanitization here
                 autoComplete="current-password"
                 required
                 fullWidth

@@ -163,6 +163,22 @@ export default function SignUp(props) {
         }
     };
 
+    const handleEmailChange = (event) => {
+        const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+        setEmail(sanitizedValue);
+    };
+
+    const handlePasswordChange = (event) => {
+        const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+        setPassword(sanitizedValue);
+    };
+
+    const handleNameChange = (event) => {
+        const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+        setName(sanitizedValue);
+    };
+
+
     return (
         <AppTheme {...props}>
             <CssBaseline enableColorScheme />
@@ -191,7 +207,7 @@ export default function SignUp(props) {
                                 id="name"
                                 placeholder="Jon Snow"
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={handleNameChange}
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
@@ -209,7 +225,7 @@ export default function SignUp(props) {
                                 autoComplete="email"
                                 variant="outlined"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={handleEmailChange}
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
@@ -228,7 +244,7 @@ export default function SignUp(props) {
                                 autoComplete="new-password"
                                 variant="outlined"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={handlePasswordChange}
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}

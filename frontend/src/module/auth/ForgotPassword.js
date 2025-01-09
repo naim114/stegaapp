@@ -64,14 +64,15 @@ export default function ForgotPassword(props) {
   const [isSnackbarShow, setIsSnackbarShow] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email');
+    // Sanitize email input to remove unwanted characters
+    const sanitizedEmail = email.replace(/[;'"/\\$]/g, '');
 
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    if (!sanitizedEmail || !/\S+@\S+\.\S+/.test(sanitizedEmail)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
       return;
@@ -82,7 +83,7 @@ export default function ForgotPassword(props) {
     setLoading(true);
 
     try {
-      await forgotPassword(email);
+      await forgotPassword(sanitizedEmail);
       setSnackbarMsg('Password reset email sent. Check your inbox.');
       setIsSnackbarShow(true);
     } catch (err) {
@@ -91,6 +92,11 @@ export default function ForgotPassword(props) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEmailChange = (event) => {
+    const sanitizedValue = event.target.value.replace(/[;'"/\\$]/g, '');
+    setEmail(sanitizedValue);
   };
 
   return (
@@ -125,6 +131,8 @@ export default function ForgotPassword(props) {
                 id="email"
                 type="email"
                 name="email"
+                value={email}
+                onChange={handleEmailChange} // Sanitization is here
                 placeholder="your@email.com"
                 autoComplete="email"
                 autoFocus
