@@ -68,7 +68,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 600,
+    width: 800,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -84,6 +84,8 @@ export default function Steganalysis() {
     const [loading, setLoading] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [userEmail, setUserEmail] = useState('');
+    const [secretText, setSecretText] = useState(false);
+    const [hash, setHash] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -147,12 +149,18 @@ export default function Steganalysis() {
             const data = await response.json();
             const detectedClass = data.detected_class;
             const confidencePercentage = data.confidence;
+            const secretText = data.lsb_decoded_text;
+            const hash = data.lsb_sha256_hash;
+
+            console.log(data);
 
             setResult(detectedClass);
             setConfidence(confidencePercentage);
+            setSecretText(secretText);
+            setHash(hash);
 
             if (detectedClass !== 'clean') {
-                setMsg(data.message); // Message comes from API
+                setMsg(data.message);
             } else {
                 setMsg('The file is clean.');
             }
@@ -324,6 +332,18 @@ export default function Steganalysis() {
                             {confidence && (
                                 <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
                                     Confidence Percentage: {confidence}
+                                </Typography>
+                            )}
+
+                            {secretText && (
+                                <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
+                                    Secret Text: {secretText}
+                                </Typography>
+                            )}
+
+                            {hash && (
+                                <Typography id="modal-modal-confidence" sx={{ mt: 1 }}>
+                                    SHA256 Hash: {hash}
                                 </Typography>
                             )}
 

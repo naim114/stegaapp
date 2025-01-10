@@ -6,6 +6,8 @@ import numpy as np
 import os
 import random
 import time
+from PIL import Image
+import hashlib
 
 app = Flask(__name__)
 CORS(app)
@@ -55,6 +57,36 @@ def classify_image():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+def lsb_decode(image_path):
+    image = Image.open(image_path)
+    width, height = image.size
+    pixels = image.load()
+
+    binary_secret_text = ''
+    for i in range(width):
+        for j in range(height):
+            pixel = pixels[i, j]
+            binary_secret_text += str(pixel[0] & 1)
+            if len(binary_secret_text) >= 16 and binary_secret_text[-16:] == '1111111111111110':
+                break
+        if len(binary_secret_text) >= 16 and binary_secret_text[-16:] == '1111111111111110':
+            break
+
+    binary_secret_text = binary_secret_text[:-16]
+    secret_text = ''
+    for i in range(0, len(binary_secret_text), 8):
+        byte = binary_secret_text[i:i+8]
+        if len(byte) < 8:
+            break
+        secret_text += chr(int(byte, 2))
+
+    sha256_hash = hashlib.sha256(secret_text.encode()).hexdigest()
+
+    print("secret_text:", secret_text)
+    print("sha256_hash:", sha256_hash)
+    
+    return secret_text, sha256_hash
+
 @app.route('/classify', methods=['POST'])
 def detect_file():
     MALWARE_CLASSES = ['clean', 'eth', 'html', 'js', 'ps', 'url']
@@ -75,11 +107,31 @@ def detect_file():
 
         confidence = round(random.uniform(65, 92), 2)
 
-        return jsonify({
+        secret_text, sha256_hash = None, None
+        if detected_class == 'clean':
+            temp_path = f"./temp_{file.filename}"
+            file.save(temp_path)
+            try:
+                secret_text, sha256_hash = lsb_decode(temp_path)
+                # If either value is None or an error occurs, set both to None
+                if not secret_text or not sha256_hash:
+                    secret_text, sha256_hash = None, None
+            except Exception:
+                secret_text, sha256_hash = None, None
+            finally:
+                os.remove(temp_path)
+
+        response_data = {
             'detected_class': detected_class,
             'confidence': f"{confidence}%",
             'message': f"Malicious Payload Type: {detected_class}" if detected_class != 'clean' else 'The file is clean.',
-        })
+            'lsb_decoded_text': secret_text,
+            'lsb_sha256_hash': sha256_hash
+        }
+
+        print("Response Data:", response_data)
+
+        return jsonify(response_data)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
