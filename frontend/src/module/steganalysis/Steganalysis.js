@@ -75,8 +75,6 @@ const style = {
     p: 4,
 };
 
-const MALWARE_CLASSES = ['clean', 'eth', 'html', 'js', 'ps', 'url'];
-
 export default function Steganalysis() {
     const [file, setFile] = useState(null);
     const [open, setOpen] = useState(false);
@@ -124,45 +122,46 @@ export default function Steganalysis() {
         setFile(selectedFile);
     }
 
-    const handleSteganalysis = () => {
+    const handleSteganalysis = async () => {
         if (!file) {
             alert('No file selected.');
             return;
         }
 
         handleOpen();
-
         setLoading(true);
 
-        fetch('http://localhost:5000/api/classify', {
-            method: 'POST',
-            body: file,
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Flask API response:', data);
-            })
-            .catch(error => {
-                console.error('Error calling Flask API:', error);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('http://localhost:5000/classify', {
+                method: 'POST',
+                body: formData,
             });
 
-        setTimeout(() => {
-            const fileName = file.name.toLowerCase();
-            const detectedClass = MALWARE_CLASSES.find((cls) => fileName.includes(cls));
-
-            const calculateConfidence = (Math.random() * (92 - 65) + 65).toFixed(2);
-            setConfidence(`${calculateConfidence}%`);
-
-            if (detectedClass) {
-                setResult(detectedClass);
-                setMsg(`Malicious Payload Type: ${detectedClass}`);
-            } else {
-                setResult('clean');
-                setMsg('The file is clean.');
+            if (!response.ok) {
+                throw new Error('Error in API call');
             }
 
+            const data = await response.json();
+            const detectedClass = data.detected_class;
+            const confidencePercentage = data.confidence;
+
+            setResult(detectedClass);
+            setConfidence(confidencePercentage);
+
+            if (detectedClass !== 'clean') {
+                setMsg(data.message); // Message comes from API
+            } else {
+                setMsg('The file is clean.');
+            }
+        } catch (error) {
+            console.error('Error in steganalysis:', error);
+            setMsg('Error analyzing the file. Please try again.');
+        } finally {
             setLoading(false);
-        }, (Math.random() * (5000 - 1000) + 1000));
+        }
     };
 
     const saveResult = async () => {
